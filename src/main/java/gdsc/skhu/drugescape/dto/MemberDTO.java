@@ -21,9 +21,6 @@ public class MemberDTO {
     @Schema(description = "verified_email")
     private Boolean verifiedEmail;
 
-    @Schema(description = "password")
-    private String password;
-
-    @Schema(description = "point")
+    @Schema(description = "picture")
     private String picture;
 }

@@ -9,59 +9,39 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 @Slf4j
+@RequestMapping("/api/oauth2")
 @RestController
 @RequiredArgsConstructor
-@Tag(name = "Member API", description = "사용자 API")
+@Tag(name = "Member API", description = "사용자 관련 API")
 public class MemberController {
     private final MemberService memberService;
 
-    @Operation(summary = "Google OAuth2 콜백", description = "Google OAuth2 callback")
-    @ApiResponse(responseCode = "200", description = "OK")
-    @GetMapping("api/oauth2/callback/google")
-    public ResponseEntity<TokenDTO> googleOAuth2Callback(@RequestParam("code") String code) {
+    @Operation(summary = "Google OAuth2 로그인/회원가입", description = "Google OAuth2를 통한 로그인 및 회원가입을 처리합니다.")
+    @ApiResponse(responseCode = "200", description = "로그인/회원가입 성공")
+    @GetMapping("/LoginSignup")
+    public ResponseEntity<TokenDTO> handleGoogleLoginSignup(@RequestParam("code") String code) {
         try {
-            TokenDTO token = memberService.login(code);
+            TokenDTO token = memberService.loginOrSignupWithGoogle(code);
             return ResponseEntity.ok(token);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            log.error("로그인/회원가입 처리 중 오류 발생", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 
-    @Operation(summary = "로그인", description = "Login")
-    @ApiResponse(responseCode = "200", description = "OK")
-    @PostMapping("/login")
-    public ResponseEntity<TokenDTO> login(@RequestParam("code") String code) {
-        TokenDTO token = memberService.login(code);
-        return ResponseEntity.ok(token);
-    }
-
-    @Operation(summary = "로그아웃", description = "Logout")
-    @ApiResponse(responseCode = "200", description = "OK")
+    @Operation(summary = "로그아웃", description = "사용자를 로그아웃 시킵니다.")
+    @ApiResponse(responseCode = "200", description = "로그아웃 성공")
     @PostMapping("/logout")
     public ResponseEntity<Void> logout(@RequestBody TokenDTO tokenDTO) {
         memberService.logout(tokenDTO.getAccessToken());
         return ResponseEntity.ok().build();
     }
 
-    @Operation(summary = "회원가입", description = "Signup")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "OK"),
-            @ApiResponse(responseCode = "400", description = "Bad Request")
-    })
-    @PostMapping("/signup")
-    public ResponseEntity<TokenDTO> signup(@RequestParam("code") String code) {
-        String googleAccessToken = memberService.getGoogleAccessToken(code);
-        MemberDTO memberDTO = memberService.getAccountDTO(googleAccessToken);
-        TokenDTO token = memberService.signup(memberDTO);
-        return ResponseEntity.status(HttpStatus.CREATED).body(token);
-    }
-
-    @Operation(summary = "리프레시", description = "Refresh")
-    @ApiResponse(responseCode = "200", description = "OK")
+    @Operation(summary = "토큰 갱신", description = "만료된 토큰을 새로 갱신합니다.")
+    @ApiResponse(responseCode = "200", description = "토큰 갱신 성공")
     @PostMapping("/refresh")
     public ResponseEntity<TokenDTO> refresh(@RequestBody TokenDTO tokenDTO) {
         TokenDTO newToken = memberService.refresh(tokenDTO.getRefreshToken());

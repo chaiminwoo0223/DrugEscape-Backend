@@ -9,11 +9,13 @@ import gdsc.skhu.drugescape.dto.TokenDTO;
 import gdsc.skhu.drugescape.jwt.TokenProvider;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
+import com.google.gson.reflect.TypeToken;
+import java.lang.reflect.Type;
 
-import java.net.URI;
 import java.util.Map;
 import java.util.Optional;
 
@@ -26,7 +28,6 @@ public class MemberService {
 
     private final MemberRepository memberRepository;
     private final TokenProvider tokenProvider;
-    private final PasswordEncoder passwordEncoder;
     private final TokenBlackListService tokenBlackListService;
 
     public MemberService(@Value("${GOOGLE_TOKEN_URL}") String googleTokenUrl,
@@ -35,7 +36,6 @@ public class MemberService {
                          @Value("${GOOGLE_REDIRECT_URI}") String googleRedirectUri,
                          MemberRepository memberRepository,
                          TokenProvider tokenProvider,
-                         PasswordEncoder passwordEncoder,
                          TokenBlackListService tokenBlackListService) {
         this.GOOGLE_TOKEN_URL = googleTokenUrl;
         this.GOOGLE_CLIENT_ID = googleClientId;
@@ -43,78 +43,81 @@ public class MemberService {
         this.GOOGLE_REDIRECT_URI = googleRedirectUri;
         this.memberRepository = memberRepository;
         this.tokenProvider = tokenProvider;
-        this.passwordEncoder = passwordEncoder;
         this.tokenBlackListService = tokenBlackListService;
     }
 
-    public String getGoogleAccessToken(String code) {
-        RestTemplate restTemplate = new RestTemplate();
-        Map<String, String> params = Map.of(
-                "code", code,
-                "scope", "https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email",
-                "client_id", GOOGLE_CLIENT_ID,
-                "client_secret", GOOGLE_CLIENT_SECRET,
-                "redirect_uri", GOOGLE_REDIRECT_URI,
-                "grant_type", "authorization_code"
-        );
-        ResponseEntity<String> responseEntity = restTemplate.postForEntity(GOOGLE_TOKEN_URL, params, String.class);
-        if (responseEntity.getStatusCode().is2xxSuccessful()) {
-            String json = responseEntity.getBody();
-            Gson gson = new Gson();
-            return gson.fromJson(json, TokenDTO.class)
-                    .getAccessToken();
+    public TokenDTO loginOrSignupWithGoogle(String code) {
+        try {
+            String accessToken = fetchAccessToken(code);
+            MemberDTO memberDTO = fetchMemberFromGoogle(accessToken);
+            return processMember(memberDTO);
+        } catch (Exception e) {
+            throw new RuntimeException("Google 로그인/가입 처리 중 오류 발생", e);
         }
-        throw new RuntimeException("구글 엑세스 토큰을 가져오는데 실패했습니다.");
     }
 
-    public MemberDTO getAccountDTO(String accessToken) {
+    private String fetchAccessToken(String code) {
         RestTemplate restTemplate = new RestTemplate();
-        String url = "https://www.googleapis.com/oauth2/v2/userinfo?access_token=" + accessToken;
         HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", "Bearer " + accessToken);
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        RequestEntity<Void> requestEntity = new RequestEntity<>(headers, HttpMethod.GET, URI.create(url));
-        ResponseEntity<String> responseEntity = restTemplate.exchange(requestEntity, String.class);
-        if (responseEntity.getStatusCode().is2xxSuccessful()) {
-            String json = responseEntity.getBody();
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+        params.add("code", code);
+        params.add("client_id", GOOGLE_CLIENT_ID);
+        params.add("client_secret", GOOGLE_CLIENT_SECRET);
+        params.add("redirect_uri", GOOGLE_REDIRECT_URI);
+        params.add("grant_type", "authorization_code");
+        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(params, headers);
+        ResponseEntity<String> response = restTemplate.postForEntity(GOOGLE_TOKEN_URL, request, String.class);
+        if (response.getStatusCode().is2xxSuccessful()) {
             Gson gson = new Gson();
-            return gson.fromJson(json, MemberDTO.class);
-        }
-
-        throw new RuntimeException("유저 정보를 가져오는데 실패했습니다.");
-    }
-
-    public TokenDTO login(String code) {
-        String googleAccessToken = getGoogleAccessToken(code);  // 구글에서 액세스 토큰을 얻음
-        MemberDTO memberDTO = getAccountDTO(googleAccessToken); // 액세스 토큰으로부터 사용자 정보를 얻음
-        Optional<Member> existingMember = memberRepository.findByEmail(memberDTO.getEmail()); // 이메일로 기존 회원 조회
-        if (existingMember.isPresent()) {
-            return tokenProvider.createToken(existingMember.get()); // 이미 존재하는 사용자인 경우, 토큰 생성하여 로그인 처리
+            Type type = new TypeToken<Map<String, String>>() {}.getType();
+            Map<String, String> responseMap = gson.fromJson(response.getBody(), type);
+            if (responseMap != null && responseMap.containsKey("access_token")) {
+                return responseMap.get("access_token");
+            } else {
+                throw new RuntimeException("응답에서 엑세스 토큰을 찾을 수 없습니다. 응답: " + response.getBody());
+            }
         } else {
-            return signup(memberDTO); // 회원가입 메소드 호출
+            throw new RuntimeException("Google 엑세스 토큰 요청 실패: 상태 코드 " + response.getStatusCode());
         }
     }
 
-    public void logout(String token) {
-        tokenBlackListService.addToBlackList(token);
+    private MemberDTO fetchMemberFromGoogle(String accessToken) {
+        RestTemplate restTemplate = new RestTemplate();
+        String url = "https://www.googleapis.com/oauth2/v2/userinfo";
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBearerAuth(accessToken);
+        HttpEntity<Void> entity = new HttpEntity<>(headers);
+        ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
+        if (response.getStatusCode().is2xxSuccessful()) {
+            Gson gson = new Gson();
+            return gson.fromJson(response.getBody(), MemberDTO.class);
+        } else {
+            throw new RuntimeException("Google 사용자 정보 요청 실패: 상태 코드 " + response.getStatusCode());
+        }
     }
 
-    public TokenDTO signup(MemberDTO memberDTO) {
-        String hashedPassword = passwordEncoder.encode(memberDTO.getPassword());
-        if (memberRepository.findByEmail(memberDTO.getEmail()).isPresent()) {
-            throw new RuntimeException("이미 가입된 이메일입니다.");
-        }
-        Member newMember = memberRepository.save(Member.builder()
+    private TokenDTO processMember(MemberDTO memberDTO) {
+        Optional<Member> existingMember = memberRepository.findByEmail(memberDTO.getEmail());
+        Member member = existingMember.orElseGet(() -> registerNewMember(memberDTO));
+        return tokenProvider.createToken(member);
+    }
+
+    private Member registerNewMember(MemberDTO memberDTO) {
+        Member member = Member.builder()
                 .name(memberDTO.getName())
                 .email(memberDTO.getEmail())
-                .password(hashedPassword)
                 .picture(memberDTO.getPicture())
                 .role(Role.USER)
-                .build());
-        return tokenProvider.createToken(newMember);
+                .build();
+        return memberRepository.save(member);
     }
 
-    public TokenDTO refresh(String expiredToken) {
-        return tokenProvider.refreshToken(expiredToken);
+    public void logout(String accessToken) {
+        tokenBlackListService.addToBlackList(accessToken);
+    }
+
+    public TokenDTO refresh(String refreshToken) {
+        return tokenProvider.refreshToken(refreshToken);
     }
 }
