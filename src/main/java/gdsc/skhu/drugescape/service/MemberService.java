@@ -16,6 +16,7 @@ import org.springframework.web.client.RestTemplate;
 import com.google.gson.reflect.TypeToken;
 import java.lang.reflect.Type;
 
+import java.net.URI;
 import java.util.Map;
 import java.util.Optional;
 
@@ -46,17 +47,7 @@ public class MemberService {
         this.tokenBlackListService = tokenBlackListService;
     }
 
-    public TokenDTO loginOrSignupWithGoogle(String code) {
-        try {
-            String accessToken = fetchAccessToken(code);
-            MemberDTO memberDTO = fetchMemberFromGoogle(accessToken);
-            return processMember(memberDTO);
-        } catch (Exception e) {
-            throw new RuntimeException("Google 로그인/가입 처리 중 오류 발생", e);
-        }
-    }
-
-    private String fetchAccessToken(String code) {
+    public String getGoogleAccessToken(String code) {
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
@@ -69,48 +60,46 @@ public class MemberService {
         HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(params, headers);
         ResponseEntity<String> response = restTemplate.postForEntity(GOOGLE_TOKEN_URL, request, String.class);
         if (response.getStatusCode().is2xxSuccessful()) {
+            String json = response.getBody();
             Gson gson = new Gson();
-            Type type = new TypeToken<Map<String, String>>() {}.getType();
-            Map<String, String> responseMap = gson.fromJson(response.getBody(), type);
-            if (responseMap != null && responseMap.containsKey("access_token")) {
-                return responseMap.get("access_token");
-            } else {
-                throw new RuntimeException("응답에서 엑세스 토큰을 찾을 수 없습니다. 응답: " + response.getBody());
-            }
+            Type type = new TypeToken<Map<String, String>>(){}.getType();
+            Map<String, String> responseMap = gson.fromJson(json, type);
+            return responseMap.get("access_token");
         } else {
-            throw new RuntimeException("Google 엑세스 토큰 요청 실패: 상태 코드 " + response.getStatusCode());
+            throw new RuntimeException("Failed to retrieve Google access token: " + response.getStatusCode());
         }
     }
 
-    private MemberDTO fetchMemberFromGoogle(String accessToken) {
-        RestTemplate restTemplate = new RestTemplate();
-        String url = "https://www.googleapis.com/oauth2/v2/userinfo";
-        HttpHeaders headers = new HttpHeaders();
-        headers.setBearerAuth(accessToken);
-        HttpEntity<Void> entity = new HttpEntity<>(headers);
-        ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
-        if (response.getStatusCode().is2xxSuccessful()) {
-            Gson gson = new Gson();
-            return gson.fromJson(response.getBody(), MemberDTO.class);
-        } else {
-            throw new RuntimeException("Google 사용자 정보 요청 실패: 상태 코드 " + response.getStatusCode());
+    public TokenDTO loginOrSignUp(String googleAccessToken) {
+        MemberDTO memberDTO = getMemberDTO(googleAccessToken);
+        if (Boolean.FALSE.equals(memberDTO.getVerifiedEmail())) {
+            throw new RuntimeException("이메일 인증이 되지 않은 유저입니다.");
         }
-    }
-
-    private TokenDTO processMember(MemberDTO memberDTO) {
-        Optional<Member> existingMember = memberRepository.findByEmail(memberDTO.getEmail());
-        Member member = existingMember.orElseGet(() -> registerNewMember(memberDTO));
+        Member member = memberRepository.findByEmail(memberDTO.getEmail()).orElseGet(() ->
+                memberRepository.save(Member.builder()
+                        .email(memberDTO.getEmail())
+                        .name(memberDTO.getName())
+                        .picture(memberDTO.getPicture())
+                        .role(Role.USER)
+                        .build())
+        );
         return tokenProvider.createToken(member);
     }
 
-    private Member registerNewMember(MemberDTO memberDTO) {
-        Member member = Member.builder()
-                .name(memberDTO.getName())
-                .email(memberDTO.getEmail())
-                .picture(memberDTO.getPicture())
-                .role(Role.USER)
-                .build();
-        return memberRepository.save(member);
+    public MemberDTO getMemberDTO(String accessToken) {
+        RestTemplate restTemplate = new RestTemplate();
+        String url = "https://www.googleapis.com/oauth2/v2/userinfo?access_token=" + accessToken;
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "Bearer " + accessToken);
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        RequestEntity<Void> requestEntity = new RequestEntity<>(headers, HttpMethod.GET, URI.create(url));
+        ResponseEntity<String> responseEntity = restTemplate.exchange(requestEntity, String.class);
+        if (responseEntity.getStatusCode().is2xxSuccessful()) {
+            String json = responseEntity.getBody();
+            Gson gson = new Gson();
+            return gson.fromJson(json, MemberDTO.class);
+        }
+        throw new RuntimeException("유저 정보를 가져오는데 실패했습니다.");
     }
 
     public void logout(String accessToken) {

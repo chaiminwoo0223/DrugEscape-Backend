@@ -22,14 +22,13 @@ public class MemberController {
     @Operation(summary = "Google OAuth2 로그인/회원가입", description = "Google OAuth2를 통한 로그인 및 회원가입을 처리합니다.")
     @ApiResponse(responseCode = "200", description = "로그인/회원가입 성공")
     @GetMapping("/LoginSignup")
-    public ResponseEntity<TokenDTO> handleGoogleLoginSignup(@RequestParam("code") String code) {
-        try {
-            TokenDTO token = memberService.loginOrSignupWithGoogle(code);
-            return ResponseEntity.ok(token);
-        } catch (Exception e) {
-            log.error("로그인/회원가입 처리 중 오류 발생", e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
+    public TokenDTO googleCallback(@RequestParam(name = "code") String code) {
+        String googleAccessToken = memberService.getGoogleAccessToken(code);
+        return loginOrSignup(googleAccessToken);
+    }
+
+    public TokenDTO loginOrSignup(String googleAccessToken) {
+        return memberService.loginOrSignUp(googleAccessToken);
     }
 
     @Operation(summary = "로그아웃", description = "사용자를 로그아웃 시킵니다.")
