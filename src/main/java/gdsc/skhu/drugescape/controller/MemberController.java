@@ -2,7 +2,6 @@ package gdsc.skhu.drugescape.controller;
 
 import gdsc.skhu.drugescape.dto.*;
 import gdsc.skhu.drugescape.service.MemberService;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import lombok.RequiredArgsConstructor;
@@ -22,14 +21,15 @@ public class MemberController {
     @Operation(summary = "Google OAuth2 로그인/회원가입", description = "Google OAuth2를 통한 로그인 및 회원가입을 처리합니다.")
     @ApiResponse(responseCode = "200", description = "로그인/회원가입 성공")
     @GetMapping("/LoginSignup")
-    public TokenDTO googleCallback(@RequestParam(name = "code") String code) {
-        String googleAccessToken = memberService.getGoogleAccessToken(code);
-        return loginOrSignup(googleAccessToken);
+    public TokenDTO googleLoginSignup(@RequestParam(name = "code") String code) {
+        try {
+            String googleAccessToken = memberService.getGoogleAccessToken(code);
+            return memberService.loginOrSignUp(googleAccessToken);
+        } catch (Exception e) {
+            throw new RuntimeException("로그인/회원가입 처리 중 오류 발생", e);
+        }
     }
 
-    public TokenDTO loginOrSignup(String googleAccessToken) {
-        return memberService.loginOrSignUp(googleAccessToken);
-    }
 
     @Operation(summary = "로그아웃", description = "사용자를 로그아웃 시킵니다.")
     @ApiResponse(responseCode = "200", description = "로그아웃 성공")
