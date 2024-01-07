@@ -34,7 +34,16 @@ public class SecurityConfig {
                 .formLogin(AbstractHttpConfigurer::disable)
                 .logout(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorizeRequests -> authorizeRequests
-                        .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/drugescape/**").permitAll()
+                        .requestMatchers("/v3/api-docs/**",
+                                         "/swagger-ui/**",
+                                         "/drugescape/**",
+                                         "/LoginSignup").permitAll()
+                        .requestMatchers("/logout",
+                                         "/refresh",
+                                         "/mypage",
+                                         "/manage",
+                                         "/map/**",
+                                         "/donate/**").hasRole("USER")
                         .anyRequest().authenticated()
                 )
                 .cors(cors -> cors.configurationSource(configurationSource()))
