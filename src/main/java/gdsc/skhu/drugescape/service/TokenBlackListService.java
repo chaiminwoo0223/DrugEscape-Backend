@@ -17,8 +17,7 @@ public class TokenBlackListService {
 
     public void addToBlackList(String token) {
         // 토큰과 함께 "blacklist"를 키로 사용하여 Redis에 저장합니다.
-        // 만료 시간을 설정하여 자동으로 블랙리스트에서 제거되도록 할 수 있습니다.
-        redisTemplate.opsForValue().set("blacklist:" + token, "true", 5, TimeUnit.DAYS);
+        redisTemplate.opsForValue().set("blacklist:" + token, "true", 7, TimeUnit.DAYS); // 만료 기간(7일)
     }
 
     public boolean isBlackListed(String token) {
