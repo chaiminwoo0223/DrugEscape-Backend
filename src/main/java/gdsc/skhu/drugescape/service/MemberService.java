@@ -63,7 +63,11 @@ public class MemberService {
             Gson gson = new Gson();
             Type type = new TypeToken<Map<String, String>>(){}.getType();
             Map<String, String> responseMap = gson.fromJson(json, type);
-            return responseMap.get("access_token");
+            if (responseMap != null && responseMap.containsKey("access_token")) {
+                return responseMap.get("access_token");
+            } else {
+                throw new RuntimeException("Response does not contain access token");
+            }
         } else {
             throw new RuntimeException("Failed to retrieve Google access token: " + response.getStatusCode());
         }
