@@ -30,7 +30,6 @@ public class MemberController {
         }
     }
 
-
     @Operation(summary = "로그아웃", description = "사용자를 로그아웃 시킵니다.")
     @ApiResponse(responseCode = "200", description = "로그아웃 성공")
     @PostMapping("/logout")

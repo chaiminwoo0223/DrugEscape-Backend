@@ -69,22 +69,6 @@ public class MemberService {
         }
     }
 
-    public TokenDTO loginOrSignUp(String googleAccessToken) {
-        MemberDTO memberDTO = getMemberDTO(googleAccessToken);
-        if (Boolean.FALSE.equals(memberDTO.getVerifiedEmail())) {
-            throw new RuntimeException("이메일 인증이 되지 않은 유저입니다.");
-        }
-        Member member = memberRepository.findByEmail(memberDTO.getEmail()).orElseGet(() ->
-                memberRepository.save(Member.builder()
-                        .email(memberDTO.getEmail())
-                        .name(memberDTO.getName())
-                        .picture(memberDTO.getPicture())
-                        .role(Role.USER)
-                        .build())
-        );
-        return tokenProvider.createToken(member);
-    }
-
     public MemberDTO getMemberDTO(String accessToken) {
         RestTemplate restTemplate = new RestTemplate();
         String url = "https://www.googleapis.com/oauth2/v2/userinfo?access_token=" + accessToken;
@@ -99,6 +83,22 @@ public class MemberService {
             return gson.fromJson(json, MemberDTO.class);
         }
         throw new RuntimeException("유저 정보를 가져오는데 실패했습니다.");
+    }
+
+    public TokenDTO loginOrSignUp(String googleAccessToken) {
+        MemberDTO memberDTO = getMemberDTO(googleAccessToken);
+        if (Boolean.FALSE.equals(memberDTO.getVerifiedEmail())) {
+            throw new RuntimeException("이메일 인증이 되지 않은 유저입니다.");
+        }
+        Member member = memberRepository.findByEmail(memberDTO.getEmail()).orElseGet(() ->
+                memberRepository.save(Member.builder()
+                        .email(memberDTO.getEmail())
+                        .name(memberDTO.getName())
+                        .picture(memberDTO.getPicture())
+                        .role(Role.USER)
+                        .build())
+        );
+        return tokenProvider.createToken(member);
     }
 
     public void logout(String accessToken) {
