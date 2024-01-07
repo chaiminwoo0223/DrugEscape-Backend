@@ -90,7 +90,7 @@ public class TokenProvider {
 
     public TokenDTO refreshToken(String expiredToken) {
         if (!validateToken(expiredToken)) {
-            throw new RuntimeException("만료된 토큰입니다.");
+            throw new RuntimeException("유효하지 않거나 만료된 리프레시 토큰입니다.");
         }
         Claims claims = parseClaims(expiredToken);
         String email = claims.getSubject(); // Subject로부터 이메일 추출
