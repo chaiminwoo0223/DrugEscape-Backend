@@ -16,7 +16,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.server.ResponseStatusException;
 
 @Slf4j
-@RequestMapping("/api/oauth2") // drugescape로 변형
+@RequestMapping("/drugescape")
 @RestController
 @RequiredArgsConstructor
 @Tag(name = "Member API", description = "사용자 관련 API")
