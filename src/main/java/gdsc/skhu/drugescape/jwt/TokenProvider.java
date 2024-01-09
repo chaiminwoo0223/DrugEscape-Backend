@@ -2,7 +2,7 @@ package gdsc.skhu.drugescape.jwt;
 
 import gdsc.skhu.drugescape.domain.model.Member;
 import gdsc.skhu.drugescape.domain.repository.MemberRepository;
-import gdsc.skhu.drugescape.dto.TokenDTO;
+import gdsc.skhu.drugescape.domain.dto.TokenDTO;
 import gdsc.skhu.drugescape.service.TokenBlackListService;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
@@ -108,6 +108,19 @@ public class TokenProvider {
                     .getBody();
         } catch (ExpiredJwtException e) {
             return e.getClaims();
+        }
+    }
+
+    public String getEmailFromToken(String token) {
+        try {
+            Claims claims = Jwts.parserBuilder()
+                    .setSigningKey(key)
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody();
+            return claims.getSubject();
+        } catch (JwtException e) {
+            throw new RuntimeException("토큰 파싱 중 오류가 발생했습니다: " + e.getMessage());
         }
     }
 }

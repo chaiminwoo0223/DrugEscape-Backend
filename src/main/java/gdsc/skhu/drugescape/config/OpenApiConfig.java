@@ -18,7 +18,7 @@ public class OpenApiConfig {
         Info info = new Info()
                 .title("DrugEscape API Documentation")
                 .description("API 문서화")
-                .version("2.3.0");
+                .version("3.1.0");
         // SecuritySecheme명
         String JWTSchemeName = "JWT Authorization";
         // API 요청 헤더에 인증정보 포함

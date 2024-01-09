@@ -4,8 +4,8 @@ import com.google.gson.Gson;
 import gdsc.skhu.drugescape.domain.model.Member;
 import gdsc.skhu.drugescape.domain.model.Role;
 import gdsc.skhu.drugescape.domain.repository.MemberRepository;
-import gdsc.skhu.drugescape.dto.MemberDTO;
-import gdsc.skhu.drugescape.dto.TokenDTO;
+import gdsc.skhu.drugescape.domain.dto.MemberDTO;
+import gdsc.skhu.drugescape.domain.dto.TokenDTO;
 import gdsc.skhu.drugescape.jwt.TokenProvider;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
@@ -111,5 +111,15 @@ public class MemberService {
 
     public TokenDTO refresh(String refreshToken) {
         return tokenProvider.refreshToken(refreshToken);
+    }
+
+    public MemberDTO getMemberByEmail(String email) {
+        Member member = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
+        return MemberDTO.builder()
+                .name(member.getName())
+                .email(member.getEmail())
+                .picture(member.getPicture())
+                .build();
     }
 }

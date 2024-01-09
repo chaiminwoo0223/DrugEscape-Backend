@@ -36,14 +36,14 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorizeRequests -> authorizeRequests
                         .requestMatchers("/v3/api-docs/**",
                                          "/swagger-ui/**",
-                                         "/drugescape/**",
-                                         "/LoginSignup").permitAll()
-                        .requestMatchers("/logout",
+                                         "/drugescape/**").permitAll()
+                        .requestMatchers("/main/**",
+                                         "/logout",
                                          "/refresh",
                                          "/mypage",
                                          "/manage",
                                          "/map/**",
-                                         "/donate/**").hasRole("USER")
+                                         "/donate/**").hasAnyRole("USER")
                         .anyRequest().authenticated()
                 )
                 .cors(cors -> cors.configurationSource(configurationSource()))
