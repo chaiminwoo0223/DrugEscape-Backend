@@ -110,17 +110,4 @@ public class TokenProvider {
             return e.getClaims();
         }
     }
-
-    public String getEmailFromToken(String token) {
-        try {
-            Claims claims = Jwts.parserBuilder()
-                    .setSigningKey(key)
-                    .build()
-                    .parseClaimsJws(token)
-                    .getBody();
-            return claims.getSubject();
-        } catch (JwtException e) {
-            throw new RuntimeException("토큰 파싱 중 오류가 발생했습니다: " + e.getMessage());
-        }
-    }
 }
