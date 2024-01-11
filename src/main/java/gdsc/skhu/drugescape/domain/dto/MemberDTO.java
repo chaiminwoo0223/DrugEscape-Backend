@@ -9,9 +9,6 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class MemberDTO {
-    @Schema(description = "id")
-    private String id;
-
     @Schema(description = "name")
     private String name;
 

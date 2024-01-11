@@ -1,9 +1,7 @@
 package gdsc.skhu.drugescape.controller;
 
-import gdsc.skhu.drugescape.domain.dto.MemberDTO;
 import gdsc.skhu.drugescape.domain.dto.ResponseErrorDTO;
 import gdsc.skhu.drugescape.domain.dto.TokenDTO;
-import gdsc.skhu.drugescape.jwt.TokenProvider;
 import gdsc.skhu.drugescape.service.MemberService;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -25,7 +23,6 @@ import org.springframework.web.server.ResponseStatusException;
 @Tag(name = "Member API", description = "사용자 관련 API")
 public class MemberController {
     private final MemberService memberService;
-    private final TokenProvider tokenProvider;
 
     @Operation(summary = "Google OAuth2 로그인/회원가입", description = "Google OAuth2를 통한 로그인 및 회원가입을 처리합니다.")
     @ApiResponses(value = {
@@ -68,29 +65,5 @@ public class MemberController {
     public ResponseEntity<TokenDTO> refresh(@RequestBody TokenDTO tokenDTO) {
         TokenDTO newToken = memberService.refresh(tokenDTO.getRefreshToken());
         return ResponseEntity.ok(newToken);
-    }
-
-    @Operation(summary = "프로필 조회", description = "사용자의 프로필 정보를 조회합니다.")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "프로필 조회 성공", content = @Content(schema = @Schema(implementation = MemberDTO.class))),
-            @ApiResponse(responseCode = "401", description = "인증되지 않은 사용자", content = @Content(schema = @Schema(implementation = ResponseErrorDTO.class))),
-            @ApiResponse(responseCode = "500", description = "서버 내부 오류", content = @Content(schema = @Schema(implementation = ResponseErrorDTO.class)))
-    })
-    @GetMapping("/profile")
-    public ResponseEntity<?> getProfile(@RequestHeader("Authorization") String authorizationHeader) {
-        if (!authorizationHeader.startsWith("Bearer ")) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
-        String token = authorizationHeader.substring(7);
-        if (!tokenProvider.validateToken(token)) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
-        try {
-            String userEmail = tokenProvider.getEmailFromToken(token);
-            MemberDTO member = memberService.getMemberByEmail(userEmail);
-            return ResponseEntity.ok(member);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
     }
 }

@@ -112,14 +112,4 @@ public class MemberService {
     public TokenDTO refresh(String refreshToken) {
         return tokenProvider.refreshToken(refreshToken);
     }
-
-    public MemberDTO getMemberByEmail(String email) {
-        Member member = memberRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
-        return MemberDTO.builder()
-                .name(member.getName())
-                .email(member.getEmail())
-                .picture(member.getPicture())
-                .build();
-    }
 }
