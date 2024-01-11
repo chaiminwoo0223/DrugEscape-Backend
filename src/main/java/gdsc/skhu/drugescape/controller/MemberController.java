@@ -31,7 +31,7 @@ public class MemberController {
             @ApiResponse(responseCode = "401", description = "인증 실패", content = @Content(schema = @Schema(implementation = ResponseErrorDTO.class))),
             @ApiResponse(responseCode = "500", description = "서버 내부 오류", content = @Content(schema = @Schema(implementation = ResponseErrorDTO.class)))
     })
-    @GetMapping("/LoginSignup")
+    @GetMapping("/LoginSignup") // 요청 방식을 구체화 Get or Post or Request
     public TokenDTO googleLoginSignup(@RequestParam(name = "code") String code) {
         try {
             String googleAccessToken = memberService.getGoogleAccessToken(code);

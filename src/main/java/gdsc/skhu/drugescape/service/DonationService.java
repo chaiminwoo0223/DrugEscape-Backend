@@ -17,27 +17,27 @@ public class DonationService {
     private final ReportRepository reportRepository;
 
     @Transactional
-    public void donation(Long reportId, int point) {
-        Report report = reportRepository.findById(reportId)
-                .orElseThrow(() -> new IllegalStateException("ID가 " + reportId + "인 보고서를 찾을 수 없습니다."));
-        report.pointDecrease(point); // 포인트 감소
-        reportRepository.save(report);
+    public void recordDonation(Long reportId, int donatingPoint) {
         Donation donation = Donation.builder()
-                .donatedPoint(point)
+                .donatingPoint(donatingPoint)
                 .reportId(reportId)
                 .build();
         donationRepository.save(donation);
     }
 
     @Transactional
-    public void donationFinalization(Long reportId) {
+    public void finalizeAllDonationsForReport(Long reportId) {
+        List<Donation> donations = donationRepository.findByReportId(reportId);
+        int totalDonatingPoint = donations.stream().mapToInt(Donation::getDonatingPoint).sum();
         Report report = reportRepository.findById(reportId)
                 .orElseThrow(() -> new IllegalStateException("ID가 " + reportId + "인 보고서를 찾을 수 없습니다."));
-        report.donationProcess(); // 기부 처리
+        if (report.getPoint() < totalDonatingPoint) {
+            throw new IllegalStateException("기부 가능한 포인트보다 더 많은 포인트를 기부하려고 합니다.");
+        }
+        report.pointDecrease(totalDonatingPoint); // 전체 기부 포인트 감소
         reportRepository.save(report);
-        List<Donation> donations = donationRepository.findByReportId(reportId);
         donations.forEach(donation -> {
-            donation.donationFinalization();
+            donation.finalizeIndividualDonation();
             donationRepository.save(donation);
         });
     }

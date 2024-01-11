@@ -26,7 +26,8 @@ public class Donation {
     @Column(nullable = false)
     private Long reportId; // Report와의 연관 관계를 위한 필드
 
-    public void donationFinalization() {
+    public void finalizeIndividualDonation() {
         this.donatedPoint += this.donatingPoint; // 기부된 포인트로 추가
+        this.donatingPoint = 0; // 기부 처리 후, donatingPoint 초기화
     }
 }
