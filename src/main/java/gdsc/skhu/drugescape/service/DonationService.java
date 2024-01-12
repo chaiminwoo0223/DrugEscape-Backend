@@ -17,6 +17,17 @@ public class DonationService {
     private final ReportRepository reportRepository;
 
     @Transactional
+    public int createDonation(Long reportId) { // report가 작성이 되거나, 값이 입력이 되어야 이 코드가 살아난다.
+        Report report = reportRepository.findById(reportId)
+                .orElseThrow(() -> new IllegalArgumentException("보고서 ID " + reportId + "에 해당하는 보고서를 찾을 수 없습니다."));
+        Donation.builder()
+                .donatingPoint(report.getPoint())
+                .report(report)
+                .build();
+        return report.getPoint(); // Report의 현재 포인트 반환
+    }
+
+    @Transactional
     public void recordDonation(Long reportId, int donatingPoint) {
         Report report = reportRepository.findById(reportId)
                 .orElseThrow(() -> new IllegalStateException("보고서를 찾을 수 없습니다."));

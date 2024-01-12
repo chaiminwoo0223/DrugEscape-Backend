@@ -22,6 +22,20 @@ import org.springframework.web.bind.annotation.*;
 public class DonationController {
     private final DonationService donationService;
 
+    @Operation(summary = "기부 가능 포인트 조회", description = "사용자가 기부할 수 있는 현재 포인트를 조회합니다.")
+    @ApiResponse(responseCode = "200", description = "조회 성공")
+    @GetMapping("/donate")
+    public ResponseEntity<Integer> getAvailableDonationPoints(@RequestParam Long reportId) {
+        log.info("기부 가능 포인트 조회 요청 - 보고서 ID: {}", reportId);
+        try {
+            int availablePoints = donationService.createDonation(reportId);
+            return ResponseEntity.ok(availablePoints);
+        } catch (Exception e) {
+            log.error("기부 가능 포인트 조회 중 예기치 않은 오류 발생 - 보고서 ID: {}", reportId, e);
+            return ResponseEntity.internalServerError().body(null);
+        }
+    }
+
     @Operation(summary = "Donated 버튼 클릭", description = "사용자가 기부 버튼을 클릭하면 이 메서드가 호출됩니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "기부 성공"),
