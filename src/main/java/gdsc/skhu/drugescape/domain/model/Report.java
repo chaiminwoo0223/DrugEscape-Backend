@@ -1,10 +1,9 @@
 package gdsc.skhu.drugescape.domain.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
+
+import java.util.List;
 
 @Entity
 @Builder
@@ -14,23 +13,22 @@ import lombok.NoArgsConstructor;
 public class Report {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(nullable = false)
     private Long id;
 
-    @Column(unique = true, nullable = false)
-    private int point = 1000; // 초기값(test)
+    @Column(name = "point", nullable = false)
+    private int point;
 
-    @Column(unique = true, nullable = false)
+    @Column(name = "accumulated_days", nullable = false)
     private int accumulatedDays;
 
-    @Column(unique = true, nullable = false)
+    @Column(name = "maximum_days", nullable = false)
     private int maximumDays;
 
-    @Column(unique = true, nullable = false)
+    @Column(name = "daily_goals", nullable = false)
     private int dailyGoals;
 
-    @Column(nullable = false)
-    private int donatingPoint;
+    @OneToMany(mappedBy = "report", fetch = FetchType.LAZY)
+    private List<Donation> donations;
 
     public void pointDecrease(int pointsToDecrease) {
         if (this.point < pointsToDecrease) {

@@ -40,10 +40,11 @@ public class SecurityConfig {
                         .requestMatchers("/main/**",
                                          "/logout",
                                          "/refresh",
-                                         "/mypage",
                                          "/manage",
                                          "/map/**",
-                                         "/donate/**").hasAnyRole("USER")
+                                         "/donate",
+                                         "/donate/complete").hasAnyRole("USER", "ADMIN")
+                        .requestMatchers("/donate/total").hasAnyRole("ADMIN")
                         .anyRequest().authenticated()
                 )
                 .cors(cors -> cors.configurationSource(configurationSource()))

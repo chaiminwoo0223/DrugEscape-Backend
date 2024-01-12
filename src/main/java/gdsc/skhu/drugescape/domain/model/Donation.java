@@ -1,10 +1,9 @@
 package gdsc.skhu.drugescape.domain.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
+
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Entity
 @Builder
@@ -14,20 +13,27 @@ import lombok.NoArgsConstructor;
 public class Donation {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(nullable = false)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(name = "donating_point", nullable = false)
     private int donatingPoint;
 
-    @Column(nullable = false)
+    @Column(name = "donated_point", nullable = false)
     private int donatedPoint;
 
-    @Column(nullable = false)
-    private Long reportId; // Report와의 연관 관계를 위한 필드
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "report_id", nullable = false) // "report_id" 컬럼과 맵핑
+    private Report report;
 
-    public void finalizeIndividualDonation() {
-        this.donatedPoint += this.donatingPoint; // 기부된 포인트로 추가
-        this.donatingPoint = 0; // 기부 처리 후, donatingPoint 초기화
+    private static final AtomicInteger totalDonatedPoints = new AtomicInteger(0);
+
+    public static int getTotalDonatedPoints() {
+        return totalDonatedPoints.get();
+    }
+
+    public void completeIndividualDonation() {
+        this.donatedPoint += this.donatingPoint;
+        totalDonatedPoints.addAndGet(this.donatingPoint);
+        this.donatingPoint = 0;
     }
 }

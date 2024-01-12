@@ -11,7 +11,4 @@ import lombok.*;
 public class DonationDTO {
     @Schema(description = "donating_point", example = "15000")
     private int donatingPoint;
-
-    @Schema(description = "donated_point", example = "50000")
-    private int donatedPoint;
 }
