@@ -1,7 +1,6 @@
 package gdsc.skhu.drugescape.controller;
 
 import gdsc.skhu.drugescape.domain.dto.ResponseErrorDTO;
-import gdsc.skhu.drugescape.domain.model.Donation;
 import gdsc.skhu.drugescape.service.DonationService;
 import io.swagger.v3.oas.annotations.*;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -73,13 +72,5 @@ public class DonationController {
             log.error("기부 완료 처리 중 예기치 않은 오류 발생", e);
             return ResponseEntity.internalServerError().body("기부 완료 중 오류 발생");
         }
-    }
-
-    @Operation(summary = "총 기부 포인트 조회", description = "지금까지 모인 기부 포인트를 확인합니다.")
-    @ApiResponse(responseCode = "200", description = "조회 성공")
-    @GetMapping("/donate/total")
-    public ResponseEntity<Integer> getTotalDonatedPoints() {
-        log.info("총 기부된 포인트 조회 요청");
-        return ResponseEntity.ok(Donation.getTotalDonatedPoints());
     }
 }

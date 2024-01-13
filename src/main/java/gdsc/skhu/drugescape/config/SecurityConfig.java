@@ -43,8 +43,8 @@ public class SecurityConfig {
                                          "/manage",
                                          "/map/**",
                                          "/donate",
-                                         "/donate/complete").hasAnyRole("USER", "ADMIN")
-                        .requestMatchers("/donate/total").hasAnyRole("ADMIN")
+                                         "/donate/**").hasAnyRole("USER", "ADMIN")
+                        .requestMatchers("/").hasAnyRole("ADMIN")
                         .anyRequest().authenticated()
                 )
                 .cors(cors -> cors.configurationSource(configurationSource()))
