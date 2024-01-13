@@ -1,7 +1,6 @@
 package gdsc.skhu.drugescape.jwt;
 
 import gdsc.skhu.drugescape.domain.model.Member;
-import gdsc.skhu.drugescape.domain.repository.MemberRepository;
 import gdsc.skhu.drugescape.domain.dto.TokenDTO;
 import gdsc.skhu.drugescape.service.TokenBlackListService;
 import io.jsonwebtoken.*;
@@ -26,17 +25,14 @@ import java.util.stream.Collectors;
 public class TokenProvider {
     private final Key key;
     private final long accessTokenValidityTime;
-    private final MemberRepository memberRepository;
     private final TokenBlackListService tokenBlackListService;
 
     public TokenProvider(@Value("${jwt.secret}") String secretKey,
                          @Value("${jwt.access-token-validity-in-milliseconds}") long accessTokenValidityTime,
-                         MemberRepository memberRepository,
                          TokenBlackListService tokenBlackListService) {
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
         this.key = Keys.hmacShaKeyFor(keyBytes);
         this.accessTokenValidityTime = accessTokenValidityTime;
-        this.memberRepository = memberRepository;
         this.tokenBlackListService = tokenBlackListService;
     }
 
@@ -93,10 +89,8 @@ public class TokenProvider {
             throw new RuntimeException("유효하지 않거나 만료된 리프레시 토큰입니다.");
         }
         Claims claims = parseClaims(expiredToken);
-        String email = claims.getSubject(); // Subject로부터 이메일 추출
-        Member member = memberRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
-        return createToken(member); // 새 토큰 생성
+        String subject = claims.getSubject();
+        return createTokenForSubject(subject);
     }
 
     private Claims parseClaims(String accessToken) {
@@ -109,5 +103,19 @@ public class TokenProvider {
         } catch (ExpiredJwtException e) {
             return e.getClaims();
         }
+    }
+
+    private TokenDTO createTokenForSubject(String subject) {
+        long now = (new Date()).getTime();
+        Date expiryDate = new Date(now + this.accessTokenValidityTime);
+        String accessToken = Jwts.builder()
+                .setSubject(subject)
+                .setIssuedAt(new Date())
+                .setExpiration(expiryDate)
+                .signWith(key, SignatureAlgorithm.HS256)
+                .compact();
+        return TokenDTO.builder()
+                .accessToken(accessToken)
+                .build();
     }
 }

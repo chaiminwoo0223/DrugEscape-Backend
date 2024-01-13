@@ -1,6 +1,5 @@
 package gdsc.skhu.drugescape.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
@@ -10,7 +9,6 @@ import java.util.concurrent.TimeUnit;
 public class TokenBlackListService {
     private final StringRedisTemplate redisTemplate;
 
-    @Autowired
     public TokenBlackListService(StringRedisTemplate redisTemplate) {
         this.redisTemplate = redisTemplate;
     }

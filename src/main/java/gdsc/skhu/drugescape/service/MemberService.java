@@ -105,11 +105,15 @@ public class MemberService {
         return tokenProvider.createToken(member);
     }
 
-    public void logout(String accessToken) {
+    public void logout(String accessToken, String refreshToken) {
         tokenBlackListService.addToBlackList(accessToken);
+        tokenBlackListService.addToBlackList(refreshToken);
     }
 
     public TokenDTO refresh(String refreshToken) {
+        if (tokenBlackListService.isBlackListed(refreshToken)) {
+            throw new RuntimeException("블랙리스트에 포함된 리프레시 토큰입니다.");
+        }
         return tokenProvider.refreshToken(refreshToken);
     }
 }

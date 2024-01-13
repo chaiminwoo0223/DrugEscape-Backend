@@ -45,20 +45,20 @@ public class MemberController {
         }
     }
 
-    @Operation(summary = "로그아웃", description = "사용자를 로그아웃 시킵니다.")
+    @Operation(summary = "로그아웃", description = "사용자의 현재 세션을 종료하고 토큰을 무효화합니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "로그아웃 성공"),
-            @ApiResponse(responseCode = "400", description = "잘못된 요청 또는 토큰", content = @Content(schema = @Schema(implementation = ResponseErrorDTO.class)))
+            @ApiResponse(responseCode = "400", description = "잘못된 요청 또는 토큰 형식", content = @Content(schema = @Schema(implementation = ResponseErrorDTO.class)))
     })
     @PostMapping("/logout")
     public ResponseEntity<Void> logout(@RequestBody TokenDTO tokenDTO) {
-        memberService.logout(tokenDTO.getAccessToken());
+        memberService.logout(tokenDTO.getAccessToken(), tokenDTO.getRefreshToken());
         return ResponseEntity.ok().build();
     }
 
-    @Operation(summary = "토큰 갱신", description = "만료된 토큰을 새로 갱신합니다.")
+    @Operation(summary = "토큰 갱신", description = "만료된 액세스 토큰에 대해 새 토큰을 발급합니다.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "토큰 갱신 성공"),
+            @ApiResponse(responseCode = "200", description = "토큰 갱신 성공", content = @Content(schema = @Schema(implementation = TokenDTO.class))),
             @ApiResponse(responseCode = "400", description = "잘못된 요청 또는 만료된 토큰", content = @Content(schema = @Schema(implementation = ResponseErrorDTO.class)))
     })
     @PostMapping("/refresh")
