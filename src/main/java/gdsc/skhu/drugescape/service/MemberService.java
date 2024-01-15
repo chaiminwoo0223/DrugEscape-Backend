@@ -1,12 +1,11 @@
 package gdsc.skhu.drugescape.service;
 
 import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-import gdsc.skhu.drugescape.domain.dto.MemberDTO;
-import gdsc.skhu.drugescape.domain.dto.TokenDTO;
 import gdsc.skhu.drugescape.domain.model.Member;
 import gdsc.skhu.drugescape.domain.model.Role;
 import gdsc.skhu.drugescape.domain.repository.MemberRepository;
+import gdsc.skhu.drugescape.domain.dto.MemberDTO;
+import gdsc.skhu.drugescape.domain.dto.TokenDTO;
 import gdsc.skhu.drugescape.jwt.TokenProvider;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
@@ -14,8 +13,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
-
+import com.google.gson.reflect.TypeToken;
 import java.lang.reflect.Type;
+
 import java.net.URI;
 import java.util.Map;
 
@@ -59,16 +59,17 @@ public class MemberService {
         HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(params, headers);
         ResponseEntity<String> response = restTemplate.postForEntity(GOOGLE_TOKEN_URL, request, String.class);
         if (response.getStatusCode().is2xxSuccessful()) {
+            String json = response.getBody();
             Gson gson = new Gson();
             Type type = new TypeToken<Map<String, String>>(){}.getType();
-            Map<String, String> responseMap = gson.fromJson(response.getBody(), type);
-            if (responseMap != null) {
-                return responseMap.getOrDefault("access_token", null);
+            Map<String, String> responseMap = gson.fromJson(json, type);
+            if (responseMap != null && responseMap.containsKey("access_token")) {
+                return responseMap.get("access_token");
             } else {
-                throw new RuntimeException("Google 액세스 토큰을 검색하지 못했습니다: 응답 맵이 null입니다");
+                throw new RuntimeException("Response does not contain access token");
             }
         } else {
-            throw new RuntimeException("Google 액세스 토큰 검색 실패: " + response.getStatusCode());
+            throw new RuntimeException("Failed to retrieve Google access token: " + response.getStatusCode());
         }
     }
 
@@ -81,26 +82,26 @@ public class MemberService {
         RequestEntity<Void> requestEntity = new RequestEntity<>(headers, HttpMethod.GET, URI.create(url));
         ResponseEntity<String> responseEntity = restTemplate.exchange(requestEntity, String.class);
         if (responseEntity.getStatusCode().is2xxSuccessful()) {
+            String json = responseEntity.getBody();
             Gson gson = new Gson();
-            return gson.fromJson(responseEntity.getBody(), MemberDTO.class);
+            return gson.fromJson(json, MemberDTO.class);
         }
         throw new RuntimeException("유저 정보를 가져오는데 실패했습니다.");
     }
 
-    public TokenDTO loginOrSignUp(String code) {
-        String googleAccessToken = getGoogleAccessToken(code); // Google 액세스 토큰 획득
-        MemberDTO memberDTO = getMemberDTO(googleAccessToken); // Google 액세스 토큰을 사용하여 사용자 정보 획득
-        if (!Boolean.TRUE.equals(memberDTO.getVerifiedEmail())) {
+    public TokenDTO loginOrSignUp(String googleAccessToken) {
+        MemberDTO memberDTO = getMemberDTO(googleAccessToken);
+        if (Boolean.FALSE.equals(memberDTO.getVerifiedEmail())) {
             throw new RuntimeException("이메일 인증이 되지 않은 유저입니다.");
         }
-        Member member = memberRepository.findByEmail(memberDTO.getEmail())
-                .orElseGet(() -> memberRepository.save(Member.builder()
+        Member member = memberRepository.findByEmail(memberDTO.getEmail()).orElseGet(() ->
+                memberRepository.save(Member.builder()
                         .email(memberDTO.getEmail())
                         .name(memberDTO.getName())
                         .picture(memberDTO.getPicture())
                         .role(Role.USER)
                         .build())
-                );
+        );
         return tokenProvider.createToken(member);
     }
 

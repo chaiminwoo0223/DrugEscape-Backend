@@ -9,15 +9,15 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class MemberDTO {
-    @Schema(description = "name")
+    @Schema(description = "이름")
     private String name;
 
-    @Schema(description = "email")
+    @Schema(description = "이메일")
     private String email;
 
-    @Schema(description = "verified_email")
+    @Schema(description = "인증된 이메일")
     private Boolean verifiedEmail;
 
-    @Schema(description = "picture")
+    @Schema(description = "사진")
     private String picture;
 }

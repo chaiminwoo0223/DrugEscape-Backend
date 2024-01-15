@@ -15,20 +15,27 @@ public class Report {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "point", nullable = false)
+    @Column(nullable = false)
     private int point;
 
-    @Column(name = "accumulated_days", nullable = false)
+    @Column(nullable = false)
     private int accumulatedDays;
 
-    @Column(name = "maximum_days", nullable = false)
+    @Column(nullable = false)
     private int maximumDays;
 
-    @Column(name = "daily_goals", nullable = false)
+    @Column(nullable = false)
     private int dailyGoals;
 
     @OneToMany(mappedBy = "report", fetch = FetchType.LAZY)
     private List<Donation> donations;
+
+    public void updateReport(int point, int accumulatedDays, int maximumDays, int dailyGoals) {
+        this.point = point;
+        this.accumulatedDays = accumulatedDays;
+        this.maximumDays = Math.max(this.maximumDays, maximumDays);
+        this.dailyGoals = dailyGoals;
+    }
 
     public void pointDecrease(int pointsToDecrease) {
         if (this.point < pointsToDecrease) {

@@ -37,13 +37,14 @@ public class SecurityConfig {
                         .requestMatchers("/v3/api-docs/**",
                                          "/swagger-ui/**",
                                          "/drugescape/**").permitAll()
-                        .requestMatchers("/main/**",
+                        .requestMatchers("/main",
                                          "/logout",
                                          "/refresh",
                                          "/manage",
                                          "/map/**",
                                          "/donate",
-                                         "/donate/**").hasAnyRole("USER", "ADMIN")
+                                         "/donate/**",
+                                         "/share/**").hasAnyRole("USER", "ADMIN")
                         .requestMatchers("/").hasAnyRole("ADMIN")
                         .anyRequest().authenticated()
                 )

@@ -9,6 +9,6 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class DonationDTO {
-    @Schema(description = "donating_point", example = "15000")
+    @Schema(description = "기부할 포인트", example = "15000")
     private int donatingPoint;
 }
