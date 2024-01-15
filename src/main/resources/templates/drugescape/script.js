@@ -1,6 +1,6 @@
 document.getElementById('login').addEventListener('click', function() {
     // Google OAuth2 로그인 페이지로 리디렉션
-    window.location.href = "Test";
+    window.location.href = "https://accounts.google.com/o/oauth2/v2/auth?client_id=(CLIENT_ID)&redirect_uri=http://localhost:8080/drugescape/LoginSignup&response_type=code&scope=https://www.googleapis.com/auth/userinfo.profile%20https://www.googleapis.com/auth/userinfo.email";
 });
 
 document.getElementById('logout').addEventListener('click', function() {
@@ -38,5 +38,5 @@ document.getElementById('refreshToken').addEventListener('click', function() {
 
 document.getElementById('goToMain').addEventListener('click', function() {
     // 메인 페이지로 이동
-    window.location.href = '/drugescape/main';
+    window.location.href = 'http://localhost:8080/drugescape/main';
 });

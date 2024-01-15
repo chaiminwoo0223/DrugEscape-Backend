@@ -26,6 +26,6 @@ public class Management { // report를 작성하기 위해, 임의로 지은 것
     private int medication; // morning, lunch, evening, none
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "report_id", nullable = false) // "report_id" 컬럼과 맵핑
+    @JoinColumn(name = "reportId", nullable = false) // "report_id" 컬럼과 맵핑
     private Report report;
 }

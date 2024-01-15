@@ -6,6 +6,7 @@ import gdsc.skhu.drugescape.service.MemberService;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,6 +16,8 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.server.ResponseStatusException;
+
+import java.net.URI;
 
 @Slf4j
 @RequestMapping("/drugescape")
@@ -32,16 +35,19 @@ public class MemberController {
             @ApiResponse(responseCode = "500", description = "서버 내부 오류", content = @Content(schema = @Schema(implementation = ResponseErrorDTO.class)))
     })
     @GetMapping("/LoginSignup") // 요청 방식을 구체화 Get or Post or Request
-    public TokenDTO googleLoginSignup(@RequestParam(name = "code") String code) {
+    public ResponseEntity<?> googleLoginSignup(@RequestParam(name = "code") String code) {
         try {
             String googleAccessToken = memberService.getGoogleAccessToken(code);
-            return memberService.loginOrSignUp(googleAccessToken);
+            TokenDTO tokenDTO = memberService.loginOrSignUp(googleAccessToken);
+            HttpHeaders headers = new HttpHeaders();
+            headers.setLocation(URI.create("http://localhost:8080/drugescape/main"));
+            return new ResponseEntity<>(tokenDTO, headers, HttpStatus.FOUND);
         } catch (RuntimeException e) {
             log.error("런타임 예외 발생: ", e);
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
         } catch (Exception e) {
             log.error("처리되지 않은 예외 발생: ", e);
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "예기치 않은 오류가 발생했습니다", e);
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "예기치 않은 오류가 발생했습니다.", e);
         }
     }
 
@@ -72,7 +78,7 @@ public class MemberController {
             @ApiResponse(responseCode = "200", description = "메인 페이지로 이동 성공"),
             @ApiResponse(responseCode = "401", description = "인증 실패", content = @Content(schema = @Schema(implementation = ResponseErrorDTO.class)))
     })
-    @GetMapping("/main") // 여기서 유저와 관리자를 나눌 필요가 있다.(비밀번호 설정)
+    @GetMapping("/main")
     public String Main() {
         return "메인 페이지로 넘어갑니다.";
     }
