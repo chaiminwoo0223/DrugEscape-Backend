@@ -20,7 +20,7 @@ public class Donation {
     private int donatedPoint;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "reportId", nullable = false) // "report_id" 컬럼과 맵핑
+    @JoinColumn(name = "reportId", nullable = false)
     private Report report;
 
     public void completeIndividualDonation() {

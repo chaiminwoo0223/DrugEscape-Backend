@@ -86,13 +86,13 @@ public class MemberService {
             Gson gson = new Gson();
             return gson.fromJson(json, MemberDTO.class);
         }
-        throw new RuntimeException("유저 정보를 가져오는데 실패했습니다.");
+        throw new RuntimeException("Failed to retrieve member information.");
     }
 
     public TokenDTO loginOrSignUp(String googleAccessToken) {
         MemberDTO memberDTO = getMemberDTO(googleAccessToken);
         if (Boolean.FALSE.equals(memberDTO.getVerifiedEmail())) {
-            throw new RuntimeException("이메일 인증이 되지 않은 유저입니다.");
+            throw new RuntimeException("This member does not have email verification.");
         }
         Member member = memberRepository.findByEmail(memberDTO.getEmail()).orElseGet(() ->
                 memberRepository.save(Member.builder()
@@ -112,7 +112,7 @@ public class MemberService {
 
     public TokenDTO refresh(String refreshToken) {
         if (tokenBlackListService.isBlackListed(refreshToken)) {
-            throw new RuntimeException("블랙리스트에 포함된 리프레시 토큰입니다.");
+            throw new RuntimeException("This is a refresh token included in the blacklist.");
         }
         return tokenProvider.refreshToken(refreshToken);
     }

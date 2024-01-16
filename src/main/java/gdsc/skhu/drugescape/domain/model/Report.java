@@ -27,10 +27,14 @@ public class Report {
     @Column(nullable = false)
     private int dailyGoals;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "memberId", nullable = false)
+    private Member member;
+
     @OneToMany(mappedBy = "report", fetch = FetchType.LAZY)
     private List<Donation> donations;
 
-    public void updateReport(int point, int accumulatedDays, int maximumDays, int dailyGoals) {
+    public void applyUpdates(int point, int accumulatedDays, int maximumDays, int dailyGoals) {
         this.point = point;
         this.accumulatedDays = accumulatedDays;
         this.maximumDays = Math.max(this.maximumDays, maximumDays);
