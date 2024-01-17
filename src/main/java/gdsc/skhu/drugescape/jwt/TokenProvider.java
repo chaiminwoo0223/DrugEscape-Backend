@@ -1,0 +1,121 @@
+package gdsc.skhu.drugescape.jwt;
+
+import gdsc.skhu.drugescape.domain.model.Member;
+import gdsc.skhu.drugescape.domain.dto.TokenDTO;
+import gdsc.skhu.drugescape.service.TokenBlackListService;
+import io.jsonwebtoken.*;
+import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.security.Keys;
+import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
+
+import java.security.Key;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Date;
+import java.util.stream.Collectors;
+
+@Component
+public class TokenProvider {
+    private final Key key;
+    private final long accessTokenValidityTime;
+    private final TokenBlackListService tokenBlackListService;
+
+    public TokenProvider(@Value("${jwt.secret}") String secretKey,
+                         @Value("${jwt.access-token-validity-in-milliseconds}") long accessTokenValidityTime,
+                         TokenBlackListService tokenBlackListService) {
+        byte[] keyBytes = Decoders.BASE64.decode(secretKey);
+        this.key = Keys.hmacShaKeyFor(keyBytes);
+        this.accessTokenValidityTime = accessTokenValidityTime;
+        this.tokenBlackListService = tokenBlackListService;
+    }
+
+    public TokenDTO createToken(Member member) {
+        long nowTime = (new Date()).getTime();
+        Date tokenExpiredTime = new Date(nowTime + accessTokenValidityTime);
+        String accessToken = Jwts.builder()
+                .setSubject(member.getId().toString())
+                .claim("auth", member.getRole().name())
+                .setExpiration(tokenExpiredTime)
+                .signWith(key, SignatureAlgorithm.HS256)
+                .compact();
+        return TokenDTO.builder()
+                .accessToken(accessToken)
+                .build();
+    }
+
+    public Authentication getAuthentication(String accessToken) {
+        Claims claims = parseClaims(accessToken);
+        if (claims.get("auth") == null) {
+            throw new RuntimeException("권한 정보가 없는 토큰입니다.");
+        }
+        Collection<? extends GrantedAuthority> authorities = Arrays.stream(claims.get("auth").toString().split(","))
+                .map(SimpleGrantedAuthority::new)
+                .collect(Collectors.toList());
+        return new UsernamePasswordAuthenticationToken(claims.getSubject(), "", authorities);
+    }
+
+    public String resolveToken(HttpServletRequest request) {
+        String bearerToken = request.getHeader("Authorization");
+        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer")) {
+            return bearerToken.substring(7);
+        }
+        return null;
+    }
+
+    public boolean validateToken(String token) {
+        try {
+            if (tokenBlackListService.isBlackListed(token)) {
+                throw new SecurityException("블랙리스트에 포함된 토큰입니다.");
+            }
+            Jwts.parserBuilder()
+                    .setSigningKey(key)
+                    .build()
+                    .parseClaimsJws(token);
+            return true;
+        } catch (UnsupportedJwtException | ExpiredJwtException | IllegalArgumentException | SecurityException e) {
+            return false;
+        }
+    }
+
+    public TokenDTO refreshToken(String expiredToken) {
+        if (!validateToken(expiredToken)) {
+            throw new RuntimeException("유효하지 않거나 만료된 리프레시 토큰입니다.");
+        }
+        Claims claims = parseClaims(expiredToken);
+        String subject = claims.getSubject();
+        return createTokenForSubject(subject);
+    }
+
+    private Claims parseClaims(String accessToken) {
+        try {
+            return Jwts.parserBuilder()
+                    .setSigningKey(key)
+                    .build()
+                    .parseClaimsJws(accessToken)
+                    .getBody();
+        } catch (ExpiredJwtException e) {
+            return e.getClaims();
+        }
+    }
+
+    private TokenDTO createTokenForSubject(String subject) {
+        long now = (new Date()).getTime();
+        Date expiryDate = new Date(now + this.accessTokenValidityTime);
+        String accessToken = Jwts.builder()
+                .setSubject(subject)
+                .setIssuedAt(new Date())
+                .setExpiration(expiryDate)
+                .signWith(key, SignatureAlgorithm.HS256)
+                .compact();
+        return TokenDTO.builder()
+                .accessToken(accessToken)
+                .build();
+    }
+}
