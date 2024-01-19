@@ -9,11 +9,11 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ManagementDTO {
-    @Schema(description = "단약 기록", example = "Yes or No")
-    private int stopDrug;
+    @Schema(description = "단약 기록", example = "Yes, No")
+    private boolean stopDrug;
 
-    @Schema(description = "운동 기록", example = "Yes or No")
-    private int exercise;
+    @Schema(description = "운동 기록", example = "Yes, No")
+    private boolean exercise;
 
     @Schema(description = "식사 기록", example = "breakfast, lunch, dinner")
     private int meal;

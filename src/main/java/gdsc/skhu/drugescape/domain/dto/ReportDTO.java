@@ -12,9 +12,6 @@ public class ReportDTO {
     @Schema(description = "포인트")
     private int point;
 
-    @Schema(description = "축적된 단약일")
-    private int accumulatedDays;
-
     @Schema(description = "최대 단약일")
     private int maximumDays;
 

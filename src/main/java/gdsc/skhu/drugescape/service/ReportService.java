@@ -5,6 +5,7 @@ import gdsc.skhu.drugescape.domain.model.Report;
 import gdsc.skhu.drugescape.domain.repository.MemberRepository;
 import gdsc.skhu.drugescape.domain.repository.ReportRepository;
 import jakarta.persistence.EntityNotFoundException;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,20 +20,22 @@ public class ReportService {
     }
 
     @Transactional
-    public Report modifyOrCreateReport(Long memberId, Long reportId, int point, int accumulatedDays, int maximumDays, int dailyGoals) {
+    public Report modifyOrCreateReport(Long memberId, int point, int maximumDays, int dailyGoals) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new EntityNotFoundException("Member not found with id: " + memberId));
-        return reportRepository.findById(reportId)
-                .filter(report -> report.getMember().equals(member))
+        // reportId를 사용하지 않고, memberId를 기반으로 Report를 찾거나 생성합니다.
+        return reportRepository.findByMemberId(memberId)
                 .map(report -> {
-                    report.applyUpdates(point, accumulatedDays, maximumDays, dailyGoals);
+                    if (!report.getMember().equals(member)) {
+                        throw new AccessDeniedException("Unauthorized to update this report");
+                    }
+                    report.applyUpdates(point, maximumDays, dailyGoals);
                     return reportRepository.save(report);
                 })
                 .orElseGet(() -> {
                     Report newReport = Report.builder()
                             .member(member)
                             .point(point)
-                            .accumulatedDays(accumulatedDays)
                             .maximumDays(maximumDays)
                             .dailyGoals(dailyGoals)
                             .build();

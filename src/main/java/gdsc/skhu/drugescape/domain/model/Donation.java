@@ -20,7 +20,7 @@ public class Donation {
     private int donatedPoint;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "reportId", nullable = false)
+    @JoinColumn(name = "report_id", nullable = false)
     private Report report;
 
     public void completeIndividualDonation() {

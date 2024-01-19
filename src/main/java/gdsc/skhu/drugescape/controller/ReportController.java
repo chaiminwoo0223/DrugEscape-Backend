@@ -34,15 +34,13 @@ public class ReportController {
             @ApiResponse(responseCode = "404", description = "보고서를 찾을 수 없음"),
             @ApiResponse(responseCode = "401", description = "인증 실패", content = @Content(schema = @Schema(implementation = ResponseErrorDTO.class)))
     })
-    @PutMapping("/report/{reportId}")
+    @PutMapping("/report")
     public ResponseEntity<?> updateReportDetails(@AuthenticationPrincipal Member currentMember,
-                                                 @PathVariable Long reportId,
                                                  @RequestBody ReportDTO reportDTO) {
         try {
-            Report updatedReport = reportService.modifyOrCreateReport(currentMember.getId(), reportId, reportDTO.getPoint(), reportDTO.getAccumulatedDays(), reportDTO.getMaximumDays(), reportDTO.getDailyGoals());
+            Report updatedReport = reportService.modifyOrCreateReport(currentMember.getId(), reportDTO.getPoint(), reportDTO.getMaximumDays(), reportDTO.getDailyGoals());
             ReportDTO updatedReportDTO = ReportDTO.builder()
                     .point(updatedReport.getPoint())
-                    .accumulatedDays(updatedReport.getAccumulatedDays())
                     .maximumDays(updatedReport.getMaximumDays())
                     .dailyGoals(updatedReport.getDailyGoals())
                     .build();
