@@ -54,7 +54,6 @@ public class MemberController {
     public ResponseEntity<Void> logout(@RequestBody TokenDTO tokenDTO) {
         try {
             memberService.deactivateTokens(tokenDTO.getAccessToken(), tokenDTO.getRefreshToken());
-            log.info("로그아웃 성공 - accessToken: {}", tokenDTO.getAccessToken());
             return ResponseEntity.ok().build();
         } catch (Exception e) {
             log.error("로그아웃 실패: ", e);
@@ -71,7 +70,6 @@ public class MemberController {
     public ResponseEntity<TokenDTO> refresh(@RequestBody TokenDTO tokenDTO) {
         try {
             TokenDTO newToken = memberService.refreshAccessToken(tokenDTO.getRefreshToken());
-            log.info("액세스 토큰 갱신 성공 - refreshToken: {}", tokenDTO.getRefreshToken());
             return ResponseEntity.ok(newToken);
         } catch (Exception e) {
             log.error("토큰 갱신 실패: ", e);
