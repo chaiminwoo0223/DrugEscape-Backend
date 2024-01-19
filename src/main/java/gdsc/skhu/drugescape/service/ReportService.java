@@ -6,6 +6,8 @@ import gdsc.skhu.drugescape.domain.model.Report;
 import gdsc.skhu.drugescape.domain.repository.MemberRepository;
 import gdsc.skhu.drugescape.domain.repository.ReportRepository;
 import jakarta.persistence.EntityNotFoundException;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,6 +22,7 @@ public class ReportService {
     }
 
     @Transactional
+    @CacheEvict(value = "reports", key = "#memberId")
     public Report createReport(Long memberId, ReportDTO reportDTO) {
         Member member = findMemberById(memberId);
         Report newReport = Report.builder()
@@ -32,6 +35,7 @@ public class ReportService {
     }
 
     @Transactional
+    @CacheEvict(value = "reports", key = "#memberId")
     public Report modifyReport(Long memberId, int point, int maximumDays, int dailyGoals) {
         Member member = findMemberById(memberId);
         Report report = findReportByMember(member);
@@ -40,6 +44,7 @@ public class ReportService {
     }
 
     @Transactional
+    @Cacheable(value = "reports", key = "#memberId")
     public Report getReport(Long memberId) {
         Member member = findMemberById(memberId);
         return findReportByMember(member);

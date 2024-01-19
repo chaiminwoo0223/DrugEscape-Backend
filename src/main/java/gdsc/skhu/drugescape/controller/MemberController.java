@@ -32,9 +32,9 @@ public class MemberController {
             @ApiResponse(responseCode = "500", description = "서버 내부 오류", content = @Content(schema = @Schema(implementation = ResponseErrorDTO.class)))
     })
     @PostMapping("/login")
-    public ResponseEntity<?> googleLoginSignup(String googleAccessToken) {
+    public ResponseEntity<?> loginOrSignUp(String googleAccessToken) {
         try {
-            TokenDTO tokenDTO = memberService.loginOrSignUp(googleAccessToken);
+            TokenDTO tokenDTO = memberService.googleLoginSignup(googleAccessToken);
             return ResponseEntity.ok(tokenDTO);
         } catch (RuntimeException e) {
             log.error("런타임 예외 발생: ", e);
@@ -88,7 +88,7 @@ public class MemberController {
     public ResponseEntity<?> googleOAuth2Callback(@RequestParam(name = "code") String code) {
         try {
             String googleAccessToken = memberService.getGoogleAccessToken(code);
-            return googleLoginSignup(googleAccessToken);
+            return loginOrSignUp(googleAccessToken);
         } catch (RuntimeException e) {
             log.error("런타임 예외 발생: ", e);
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
