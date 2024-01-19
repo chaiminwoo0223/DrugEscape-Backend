@@ -111,12 +111,12 @@ public class MemberService {
         return tokenProvider.createToken(member);
     }
 
-    public void logout(String accessToken, String refreshToken) {
+    public void deactivateTokens(String accessToken, String refreshToken) {
         tokenBlackListService.addToBlackList(accessToken);
         tokenBlackListService.addToBlackList(refreshToken);
     }
 
-    public TokenDTO refresh(String refreshToken) {
+    public TokenDTO refreshAccessToken(String refreshToken) {
         if (tokenBlackListService.isBlackListed(refreshToken)) {
             throw new RuntimeException("This is a refresh token included in the blacklist.");
         }

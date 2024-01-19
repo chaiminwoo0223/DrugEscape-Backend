@@ -38,7 +38,7 @@ public class SecurityConfig {
                                          "/swagger-ui/**",
                                          "/drugescape/**").permitAll()
                         .requestMatchers("/main",
-                                         "/LoginSignup",
+                                         "/login",
                                          "/logout",
                                          "/refresh",
                                          "/manage",
