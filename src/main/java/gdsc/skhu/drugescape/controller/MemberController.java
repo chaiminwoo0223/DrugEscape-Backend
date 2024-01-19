@@ -52,8 +52,14 @@ public class MemberController {
     })
     @PostMapping("/logout")
     public ResponseEntity<Void> logout(@RequestBody TokenDTO tokenDTO) {
-        memberService.deactivateTokens(tokenDTO.getAccessToken(), tokenDTO.getRefreshToken());
-        return ResponseEntity.ok().build();
+        try {
+            memberService.deactivateTokens(tokenDTO.getAccessToken(), tokenDTO.getRefreshToken());
+            log.info("로그아웃 성공 - accessToken: {}", tokenDTO.getAccessToken());
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            log.error("로그아웃 실패: ", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
     }
 
     @Operation(summary = "토큰 갱신", description = "만료된 액세스 토큰에 대해 새 토큰을 발급합니다.")
@@ -63,8 +69,14 @@ public class MemberController {
     })
     @PostMapping("/refresh")
     public ResponseEntity<TokenDTO> refresh(@RequestBody TokenDTO tokenDTO) {
-        TokenDTO newToken = memberService.refreshAccessToken(tokenDTO.getRefreshToken());
-        return ResponseEntity.ok(newToken);
+        try {
+            TokenDTO newToken = memberService.refreshAccessToken(tokenDTO.getRefreshToken());
+            log.info("액세스 토큰 갱신 성공 - refreshToken: {}", tokenDTO.getRefreshToken());
+            return ResponseEntity.ok(newToken);
+        } catch (Exception e) {
+            log.error("토큰 갱신 실패: ", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
     }
 
     @Operation(summary = "콜백", description = "Google OAuth2를 통해 리디렉트된 요청을 처리합니다.")
