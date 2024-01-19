@@ -1,11 +1,11 @@
 package gdsc.skhu.drugescape.service;
 
+import gdsc.skhu.drugescape.domain.dto.ReportDTO;
 import gdsc.skhu.drugescape.domain.model.Member;
 import gdsc.skhu.drugescape.domain.model.Report;
 import gdsc.skhu.drugescape.domain.repository.MemberRepository;
 import gdsc.skhu.drugescape.domain.repository.ReportRepository;
 import jakarta.persistence.EntityNotFoundException;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,26 +20,38 @@ public class ReportService {
     }
 
     @Transactional
-    public Report modifyOrCreateReport(Long memberId, int point, int maximumDays, int dailyGoals) {
-        Member member = memberRepository.findById(memberId)
+    public Report createReport(Long memberId, ReportDTO reportDTO) {
+        Member member = findMemberById(memberId);
+        Report newReport = Report.builder()
+                .member(member)
+                .point(reportDTO.getPoint())
+                .maximumDays(reportDTO.getMaximumDays())
+                .dailyGoals(reportDTO.getDailyGoals())
+                .build();
+        return reportRepository.save(newReport);
+    }
+
+    @Transactional
+    public Report modifyReport(Long memberId, int point, int maximumDays, int dailyGoals) {
+        Member member = findMemberById(memberId);
+        Report report = findReportByMember(member);
+        report.applyUpdates(point, maximumDays, dailyGoals);
+        return reportRepository.save(report);
+    }
+
+    @Transactional
+    public Report getReport(Long memberId) {
+        Member member = findMemberById(memberId);
+        return findReportByMember(member);
+    }
+
+    private Member findMemberById(Long memberId) {
+        return memberRepository.findById(memberId)
                 .orElseThrow(() -> new EntityNotFoundException("Member not found with id: " + memberId));
-        // reportId를 사용하지 않고, memberId를 기반으로 Report를 찾거나 생성합니다.
-        return reportRepository.findByMemberId(memberId)
-                .map(report -> {
-                    if (!report.getMember().equals(member)) {
-                        throw new AccessDeniedException("Unauthorized to update this report");
-                    }
-                    report.applyUpdates(point, maximumDays, dailyGoals);
-                    return reportRepository.save(report);
-                })
-                .orElseGet(() -> {
-                    Report newReport = Report.builder()
-                            .member(member)
-                            .point(point)
-                            .maximumDays(maximumDays)
-                            .dailyGoals(dailyGoals)
-                            .build();
-                    return reportRepository.save(newReport);
-                });
+    }
+
+    private Report findReportByMember(Member member) {
+        return reportRepository.findByMemberId(member.getId())
+                .orElseThrow(() -> new EntityNotFoundException("Report not found for member id: " + member.getId()));
     }
 }
