@@ -35,28 +35,14 @@ public class ReportService {
     }
 
     @Transactional
-    @CacheEvict(value = "reports", key = "#memberId")
-    public Report modifyReport(Long memberId, ReportDTO reportDTO) {
-        Member member = findMemberById(memberId);
-        Report report = findReportByMember(member);
-        report.applyUpdates(reportDTO.getPoint(), reportDTO.getMaximumDays(), reportDTO.getDailyGoals());
-        return reportRepository.save(report);
-    }
-
-    @Transactional
     @Cacheable(value = "reports", key = "#memberId")
     public Report getReport(Long memberId) {
-        Member member = findMemberById(memberId);
-        return findReportByMember(member);
+        return reportRepository.findByMemberId(memberId)
+                .orElseThrow(() -> new EntityNotFoundException("Report not found for member id: " + memberId));
     }
 
     private Member findMemberById(Long memberId) {
         return memberRepository.findById(memberId)
                 .orElseThrow(() -> new EntityNotFoundException("Member not found with id: " + memberId));
-    }
-
-    private Report findReportByMember(Member member) {
-        return reportRepository.findByMemberId(member.getId())
-                .orElseThrow(() -> new EntityNotFoundException("Report not found for member id: " + member.getId()));
     }
 }

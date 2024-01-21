@@ -1,9 +1,8 @@
 package gdsc.skhu.drugescape.domain.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
-
-import java.util.List;
 
 @Entity
 @Builder(toBuilder = true)
@@ -19,17 +18,15 @@ public class Report {
     private int point;
 
     @Column(nullable = false)
-    private int maximumDays; // maximum_day 문제 발생, 왜 3?
+    private int maximumDays;
 
     @Column(nullable = false)
     private int dailyGoals;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id", nullable = false)
+    @JsonBackReference
     private Member member;
-
-    @OneToMany(mappedBy = "report", fetch = FetchType.LAZY)
-    private List<Donation> donations;
 
     public void applyUpdates(int point, int maximumDays, int dailyGoals) {
         this.point = point;

@@ -43,13 +43,16 @@ public class ManagementService {
         int totalPoints = calculatePoints(managementDTO);
         int completedTasks = calculateCompletedTasks(managementDTO);
         int dailyGoals = 25 * completedTasks;
-        ReportDTO reportDTO = new ReportDTO(totalPoints, completedTasks, dailyGoals); // ReportDTO 객체 생성
         return reportRepository.findByMemberId(memberId)
                 .map(existingReport -> {
-                    existingReport.applyUpdates(totalPoints, 0, dailyGoals); // 여기서 필요한 값으로 업데이트
+                    int updatedMaximumDays = existingReport.getMaximumDays() + 1; // maximumDays를 1 증가
+                    existingReport.applyUpdates(totalPoints, updatedMaximumDays, dailyGoals);
                     return reportRepository.save(existingReport);
                 })
-                .orElseGet(() -> reportService.createReport(memberId, reportDTO));
+                .orElseGet(() -> {
+                    ReportDTO reportDTO = new ReportDTO(totalPoints, 1, dailyGoals); // 신규 사용자의 경우 maximumDays를 1로 설정
+                    return reportService.createReport(memberId, reportDTO);
+                });
     }
 
     private int calculatePoints(ManagementDTO managementDTO) {

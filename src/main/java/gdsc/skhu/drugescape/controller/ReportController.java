@@ -36,6 +36,9 @@ public class ReportController {
             Long memberId = Long.parseLong(principal.getName());
             Report report = reportService.getReport(memberId);
             return ResponseEntity.ok(report);
+        } catch (NumberFormatException e) {
+            log.error("잘못된 사용자 ID 형식: ", e);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         } catch (EntityNotFoundException e) {
             log.error("보고서를 찾을 수 없음: ", e);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
