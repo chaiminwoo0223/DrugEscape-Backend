@@ -7,9 +7,7 @@ import gdsc.skhu.drugescape.domain.repository.MemberRepository;
 import gdsc.skhu.drugescape.domain.dto.MemberDTO;
 import gdsc.skhu.drugescape.domain.dto.TokenDTO;
 import gdsc.skhu.drugescape.jwt.TokenProvider;
-import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
@@ -89,12 +87,6 @@ public class MemberService {
             return gson.fromJson(json, MemberDTO.class);
         }
         throw new RuntimeException("Failed to retrieve member information.");
-    }
-
-    @Cacheable(value = "members", key = "#memberId")
-    public Member getMemberDetails(Long memberId) {
-        return memberRepository.findById(memberId)
-                .orElseThrow(() -> new EntityNotFoundException("Member not found with id: " + memberId));
     }
 
     public TokenDTO googleLoginSignup(String googleAccessToken) {

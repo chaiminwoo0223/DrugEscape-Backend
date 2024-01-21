@@ -21,7 +21,7 @@ public class Donation {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "report_id", nullable = false)
-    private Report report;
+    private Report report; // null 값이 없도록 수정해야 한다.
 
     public void completeIndividualDonation() {
         this.donatedPoint += this.donatingPoint;
