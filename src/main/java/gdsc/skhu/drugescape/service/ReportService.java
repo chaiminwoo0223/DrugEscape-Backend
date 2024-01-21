@@ -36,10 +36,10 @@ public class ReportService {
 
     @Transactional
     @CacheEvict(value = "reports", key = "#memberId")
-    public Report modifyReport(Long memberId, int point, int maximumDays, int dailyGoals) {
+    public Report modifyReport(Long memberId, ReportDTO reportDTO) {
         Member member = findMemberById(memberId);
         Report report = findReportByMember(member);
-        report.applyUpdates(point, maximumDays, dailyGoals);
+        report.applyUpdates(reportDTO.getPoint(), reportDTO.getMaximumDays(), reportDTO.getDailyGoals());
         return reportRepository.save(report);
     }
 

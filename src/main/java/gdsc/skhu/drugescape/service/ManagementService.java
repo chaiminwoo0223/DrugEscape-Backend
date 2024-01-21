@@ -43,12 +43,13 @@ public class ManagementService {
         int totalPoints = calculatePoints(managementDTO);
         int completedTasks = calculateCompletedTasks(managementDTO);
         int dailyGoals = 25 * completedTasks;
+        ReportDTO reportDTO = new ReportDTO(totalPoints, completedTasks, dailyGoals); // ReportDTO 객체 생성
         return reportRepository.findByMemberId(memberId)
-                .map(existingReport -> reportService.modifyReport(memberId, totalPoints, managementDTO.isStopDrug() ? 1 : 0, dailyGoals))
-                .orElseGet(() -> {
-                    ReportDTO reportDTO = new ReportDTO(totalPoints, managementDTO.isStopDrug() ? 1 : 0, dailyGoals);
-                    return reportService.createReport(memberId, reportDTO);
-                });
+                .map(existingReport -> {
+                    existingReport.applyUpdates(totalPoints, 0, dailyGoals); // 여기서 필요한 값으로 업데이트
+                    return reportRepository.save(existingReport);
+                })
+                .orElseGet(() -> reportService.createReport(memberId, reportDTO));
     }
 
     private int calculatePoints(ManagementDTO managementDTO) {
@@ -74,7 +75,8 @@ public class ManagementService {
                 .exercise(managementDTO.isExercise())
                 .meal(managementDTO.getMeal())
                 .medication(managementDTO.getMedication())
-                .report(report)
+                .member(management.getMember()) // member 필드 설정
+                .report(report) // 업데이트된 report 객체 설정
                 .build();
         managementRepository.save(updatedManagement);
     }

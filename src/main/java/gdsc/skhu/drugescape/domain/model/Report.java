@@ -6,7 +6,7 @@ import lombok.*;
 import java.util.List;
 
 @Entity
-@Builder
+@Builder(toBuilder = true)
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
@@ -19,7 +19,7 @@ public class Report {
     private int point;
 
     @Column(nullable = false)
-    private int maximumDays;
+    private int maximumDays; // maximum_day 문제 발생, 왜 3?
 
     @Column(nullable = false)
     private int dailyGoals;

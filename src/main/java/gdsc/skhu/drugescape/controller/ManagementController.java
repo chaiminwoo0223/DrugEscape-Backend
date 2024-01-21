@@ -28,14 +28,14 @@ import java.security.Principal;
 public class ManagementController {
     private final ManagementService managementService;
 
-    @Operation(summary = "관리 기록 생성", description = "사용자의 관리 기록을 생성합니다.")
+    @Operation(summary = "관리 기록 등록", description = "사용자의 관리 기록을 등록합니다.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "관리 기록 생성 성공"),
+            @ApiResponse(responseCode = "201", description = "관리 기록 등록 성공"),
             @ApiResponse(responseCode = "400", description = "잘못된 요청", content = @Content(schema = @Schema(implementation = ResponseErrorDTO.class))),
             @ApiResponse(responseCode = "401", description = "인증 실패", content = @Content(schema = @Schema(implementation = ResponseErrorDTO.class)))
     })
     @PostMapping("/manage")
-    public ResponseEntity<?> createManagementRecord(Principal principal, @RequestBody ManagementDTO managementDTO) {
+    public ResponseEntity<?> manage(Principal principal, @RequestBody ManagementDTO managementDTO) {
         try {
             Long memberId = Long.parseLong(principal.getName());
             managementService.processManagementRecord(memberId, managementDTO);
