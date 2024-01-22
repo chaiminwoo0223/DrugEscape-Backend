@@ -10,10 +10,10 @@ import lombok.*;
 @AllArgsConstructor
 public class ManagementDTO {
     @Schema(description = "단약 기록", example = "Yes, No")
-    private boolean stopDrug;
+    private int stopDrug;
 
     @Schema(description = "운동 기록", example = "Yes, No")
-    private boolean exercise;
+    private int exercise;
 
     @Schema(description = "식사 기록", example = "Breakfast, Lunch, Dinner")
     private int meal;

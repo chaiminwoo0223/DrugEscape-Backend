@@ -45,8 +45,8 @@ public class ManagementService {
     private Management createManagement(Member member, ManagementDTO managementDTO, Report report) {
         return Management.builder()
                 .member(member)
-                .stopDrug(managementDTO.isStopDrug())
-                .exercise(managementDTO.isExercise())
+                .stopDrug(managementDTO.getStopDrug())
+                .exercise(managementDTO.getExercise())
                 .meal(managementDTO.getMeal())
                 .medication(managementDTO.getMedication())
                 .report(report)
@@ -56,8 +56,8 @@ public class ManagementService {
 
     private Management updateManagement(Management existingManagement, ManagementDTO managementDTO, Report report) {
         return existingManagement.toBuilder()
-                .stopDrug(managementDTO.isStopDrug())
-                .exercise(managementDTO.isExercise())
+                .stopDrug(managementDTO.getStopDrug())
+                .exercise(managementDTO.getExercise())
                 .meal(managementDTO.getMeal())
                 .medication(managementDTO.getMedication())
                 .report(report)
@@ -75,8 +75,8 @@ public class ManagementService {
     }
 
     private int calculatePoints(ManagementDTO managementDTO) {
-        int pointsFromStopDrug = managementDTO.isStopDrug() ? 100 : 0;
-        int pointsFromExercise = managementDTO.isExercise() ? 100 : 0;
+        int pointsFromStopDrug = managementDTO.getStopDrug() == 1 ? 100 : 0;
+        int pointsFromExercise = managementDTO.getExercise() == 1 ? 100 : 0;
         int pointsFromMeal = managementDTO.getMeal() >= 2 ? 100 : (managementDTO.getMeal() == 1 ? 50 : 0);
         int pointsFromMedication = managementDTO.getMedication() != 0 ? 100 : 0;
         return pointsFromStopDrug + pointsFromExercise + pointsFromMeal + pointsFromMedication;
@@ -84,8 +84,8 @@ public class ManagementService {
 
     private int calculateCompletedTasks(ManagementDTO managementDTO) {
         int tasks = 0;
-        if (managementDTO.isStopDrug()) tasks++;
-        if (managementDTO.isExercise()) tasks++;
+        if (managementDTO.getStopDrug() == 1) tasks++;
+        if (managementDTO.getExercise() == 1) tasks++;
         if (managementDTO.getMeal() >= 2) tasks++;
         if (managementDTO.getMedication() != 0) tasks++;
         return tasks;

@@ -16,10 +16,10 @@ public class Management {
     private Long id;
 
     @Column(nullable = false)
-    private boolean stopDrug;
+    private int stopDrug;
 
     @Column(nullable = false)
-    private boolean exercise;
+    private int exercise;
 
     @Column(nullable = false)
     private int meal;
