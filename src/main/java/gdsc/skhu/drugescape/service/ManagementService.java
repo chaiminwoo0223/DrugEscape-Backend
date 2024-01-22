@@ -77,7 +77,7 @@ public class ManagementService {
     private int calculatePoints(ManagementDTO managementDTO) {
         int pointsFromStopDrug = managementDTO.getStopDrug() == 1 ? 100 : 0;
         int pointsFromExercise = managementDTO.getExercise() == 1 ? 100 : 0;
-        int pointsFromMeal = managementDTO.getMeal() >= 2 ? 100 : (managementDTO.getMeal() == 1 ? 50 : 0);
+        int pointsFromMeal = managementDTO.getMeal() >= 1 ? 100 : 0;
         int pointsFromMedication = managementDTO.getMedication() != 0 ? 100 : 0;
         return pointsFromStopDrug + pointsFromExercise + pointsFromMeal + pointsFromMedication;
     }
@@ -102,11 +102,6 @@ public class ManagementService {
                     .build();
             management = management.toBuilder()
                     .lastManagedDate(today)
-                    .build();
-        } else {
-            existingReport = existingReport.toBuilder()
-                    .point(totalPoints)
-                    .dailyGoals(dailyGoals)
                     .build();
         }
         managementRepository.save(management);
