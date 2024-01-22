@@ -37,15 +37,31 @@ public class ManagementService {
                 .orElseThrow(() -> new EntityNotFoundException("해당 ID를 가진 사용자를 찾을 수 없습니다: " + memberId));
         Report report = processReport(memberId, managementDTO);
         Management management = managementRepository.findByMemberId(memberId)
-                .orElseGet(() -> Management.builder().member(member).lastManagedDate(LocalDate.now()).build());
-        Management updatedManagement = management.toBuilder()
+                .map(existingManagement -> updateManagement(existingManagement, managementDTO, report))
+                .orElseGet(() -> createManagement(member, managementDTO, report));
+        managementRepository.save(management);
+    }
+
+    private Management createManagement(Member member, ManagementDTO managementDTO, Report report) {
+        return Management.builder()
+                .member(member)
+                .stopDrug(managementDTO.isStopDrug())
+                .exercise(managementDTO.isExercise())
+                .meal(managementDTO.getMeal())
+                .medication(managementDTO.getMedication())
+                .report(report)
+                .lastManagedDate(LocalDate.now())
+                .build();
+    }
+
+    private Management updateManagement(Management existingManagement, ManagementDTO managementDTO, Report report) {
+        return existingManagement.toBuilder()
                 .stopDrug(managementDTO.isStopDrug())
                 .exercise(managementDTO.isExercise())
                 .meal(managementDTO.getMeal())
                 .medication(managementDTO.getMedication())
                 .report(report)
                 .build();
-        managementRepository.save(updatedManagement);
     }
 
     private Report processReport(Long memberId, ManagementDTO managementDTO) {

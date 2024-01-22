@@ -15,9 +15,9 @@ public class ManagementDTO {
     @Schema(description = "운동 기록", example = "Yes, No")
     private boolean exercise;
 
-    @Schema(description = "식사 기록", example = "breakfast, lunch, dinner")
+    @Schema(description = "식사 기록", example = "Breakfast, Lunch, Dinner")
     private int meal;
 
-    @Schema(description = "치료약 섭취 기록", example = "morning, lunch, evening, none")
+    @Schema(description = "치료약 섭취 기록", example = "Morning, Lunch, Evening, None")
     private int medication;
 }

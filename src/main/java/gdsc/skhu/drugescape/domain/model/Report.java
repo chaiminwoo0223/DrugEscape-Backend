@@ -28,12 +28,6 @@ public class Report {
     @JsonBackReference
     private Member member;
 
-    public void applyUpdates(int point, int maximumDays, int dailyGoals) {
-        this.point = point;
-        this.maximumDays = Math.max(this.maximumDays, maximumDays);
-        this.dailyGoals = dailyGoals;
-    }
-
     public void pointDecrease(int pointsToDecrease) {
         if (this.point < pointsToDecrease) {
             throw new IllegalStateException("기부할 수 있는 포인트가 부족합니다.");

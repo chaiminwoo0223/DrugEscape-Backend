@@ -1,5 +1,6 @@
 package gdsc.skhu.drugescape.controller;
 
+import gdsc.skhu.drugescape.domain.dto.DonationDTO;
 import gdsc.skhu.drugescape.domain.dto.ResponseErrorDTO;
 import gdsc.skhu.drugescape.service.DonationService;
 import io.swagger.v3.oas.annotations.*;
@@ -13,6 +14,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
+
 @Slf4j
 @RestController
 @RequestMapping("/drugescape")
@@ -22,15 +25,25 @@ public class DonationController {
     private final DonationService donationService;
 
     @Operation(summary = "기부 가능 포인트 조회", description = "사용자가 기부할 수 있는 현재 포인트를 조회합니다.")
-    @ApiResponse(responseCode = "200", description = "조회 성공")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "조회 성공"),
+            @ApiResponse(responseCode = "400", description = "잘못된 요청", content = @Content(schema = @Schema(implementation = ResponseErrorDTO.class))),
+            @ApiResponse(responseCode = "404", description = "보고서를 찾을 수 없음", content = @Content(schema = @Schema(implementation = ResponseErrorDTO.class)))
+    })
     @GetMapping("/donate")
-    public ResponseEntity<Integer> getAvailableDonationPoints(@RequestParam Long reportId) {
-        log.info("기부 가능 포인트 조회 요청 - 보고서 ID: {}", reportId);
+    public ResponseEntity<Integer> getAvailableDonationPoints(Principal principal) {
         try {
-            int availablePoints = donationService.createDonation(reportId);
+            Long memberId = Long.parseLong(principal.getName());
+            int availablePoints = donationService.getAvailablePointsForDonation(memberId);
             return ResponseEntity.ok(availablePoints);
+        } catch (NumberFormatException e) {
+            log.error("기부 가능 포인트 조회 중 사용자 ID 형식 오류", e);
+            return ResponseEntity.badRequest().build();
+        } catch (IllegalArgumentException e) {
+            log.error("기부 가능 포인트 조회 중 찾을 수 없는 회원 ID - 사용자 ID: {}", principal.getName(), e);
+            return ResponseEntity.notFound().build();
         } catch (Exception e) {
-            log.error("기부 가능 포인트 조회 중 예기치 않은 오류 발생 - 보고서 ID: {}", reportId, e);
+            log.error("기부 가능 포인트 조회 중 예기치 않은 오류 발생 - 사용자 ID: {}", principal.getName(), e);
             return ResponseEntity.internalServerError().body(null);
         }
     }
@@ -42,35 +55,20 @@ public class DonationController {
             @ApiResponse(responseCode = "404", description = "보고서를 찾을 수 없음", content = @Content(schema = @Schema(implementation = ResponseErrorDTO.class)))
     })
     @PostMapping("/donate")
-    public ResponseEntity<String> donate(@RequestParam Long reportId, @RequestParam int donatingPoint) {
+    public ResponseEntity<String> donate(Principal principal, @RequestBody DonationDTO donationDTO) {
         try {
-            log.info("기부 처리 시작 - 보고서 ID: {}, 기부 포인트: {}", reportId, donatingPoint);
-            donationService.recordDonation(reportId, donatingPoint);
+            Long memberId = Long.parseLong(principal.getName());
+            donationService.processDonation(memberId, donationDTO);
             return ResponseEntity.ok("기부가 성공적으로 처리되었습니다.");
+        } catch (NumberFormatException e) {
+            log.error("잘못된 회원 ID 형식 - 회원 이름: {}", principal.getName(), e);
+            return ResponseEntity.badRequest().body("잘못된 회원 ID 형식입니다.");
         } catch (IllegalStateException e) {
-            log.error("기부 처리 중 오류 발생 - 보고서 ID: {}, 오류 메시지: {}", reportId, e.getMessage(), e);
+            log.error("기부 처리 중 오류 발생 - 오류 메시지: {}", e.getMessage(), e);
             return ResponseEntity.badRequest().body(e.getMessage());
         } catch (Exception e) {
-            log.error("기부 처리 중 예기치 않은 오류 발생 - 보고서 ID: {}", reportId, e);
+            log.error("기부 처리 중 예기치 않은 오류 발생", e);
             return ResponseEntity.internalServerError().body("기부 처리 중 오류 발생");
-        }
-    }
-
-    @Operation(summary = "모든 기부 완료", description = "시스템에 기록된 모든 기부 내역을 최종적으로 완료합니다.")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "모든 기부 완료 성공"),
-            @ApiResponse(responseCode = "400", description = "잘못된 요청", content = @Content(schema = @Schema(implementation = ResponseErrorDTO.class))),
-            @ApiResponse(responseCode = "500", description = "서버 오류", content = @Content(schema = @Schema(implementation = ResponseErrorDTO.class)))
-    })
-    @PostMapping("/donate/complete")
-    public ResponseEntity<String> completeAllDonations() {
-        try {
-            log.info("모든 기부 완료 처리 시작");
-            donationService.completeDonations();
-            return ResponseEntity.ok("모든 기부가 최종적으로 완료되었습니다.");
-        } catch (Exception e) {
-            log.error("기부 완료 처리 중 예기치 않은 오류 발생", e);
-            return ResponseEntity.internalServerError().body("기부 완료 중 오류 발생");
         }
     }
 }
