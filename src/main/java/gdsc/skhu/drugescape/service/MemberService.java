@@ -66,10 +66,10 @@ public class MemberService {
             if (responseMap != null && responseMap.containsKey("access_token")) {
                 return responseMap.get("access_token");
             } else {
-                throw new RuntimeException("Response does not contain access token");
+                throw new RuntimeException("응답에 액세스 토큰이 포함되어 있지 않습니다.");
             }
         } else {
-            throw new RuntimeException("Failed to retrieve Google access token: " + response.getStatusCode());
+            throw new RuntimeException("Google 액세스 토큰을 검색하지 못했습니다: " + response.getStatusCode());
         }
     }
 
@@ -86,13 +86,13 @@ public class MemberService {
             Gson gson = new Gson();
             return gson.fromJson(json, MemberDTO.class);
         }
-        throw new RuntimeException("Failed to retrieve member information.");
+        throw new RuntimeException("사용자 정보를 검색하지 못했습니다.");
     }
 
     public TokenDTO googleLoginSignup(String googleAccessToken) {
         MemberDTO memberDTO = getMemberDTO(googleAccessToken);
         if (Boolean.FALSE.equals(memberDTO.getVerifiedEmail())) {
-            throw new RuntimeException("This member does not have email verification.");
+            throw new RuntimeException("이 사용자는 이메일 인증을 받지 않았습니다.");
         }
         Member member = memberRepository.findByEmail(memberDTO.getEmail()).orElseGet(() ->
                 memberRepository.save(Member.builder()
@@ -112,7 +112,7 @@ public class MemberService {
 
     public TokenDTO refreshAccessToken(String refreshToken) {
         if (tokenBlackListService.isBlackListed(refreshToken)) {
-            throw new RuntimeException("This is a refresh token included in the blacklist.");
+            throw new RuntimeException("블랙리스트에 포함된 새로고침 토큰입니다.");
         }
         return tokenProvider.refreshToken(refreshToken);
     }

@@ -12,6 +12,8 @@ import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+
 @Service
 public class ManagementService {
     private final ManagementRepository managementRepository;
@@ -31,28 +33,29 @@ public class ManagementService {
 
     @Transactional
     public void processManagementRecord(Long memberId, ManagementDTO managementDTO) {
-        Report report = processReport(memberId, managementDTO);
         Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new EntityNotFoundException("Member not found with id: " + memberId));
+                .orElseThrow(() -> new EntityNotFoundException("해당 ID를 가진 사용자를 찾을 수 없습니다: " + memberId));
+        Report report = processReport(memberId, managementDTO);
         Management management = managementRepository.findByMemberId(memberId)
-                .orElse(Management.builder().member(member).build());
-        updateManagement(management, managementDTO, report);
+                .orElseGet(() -> Management.builder().member(member).lastManagedDate(LocalDate.now()).build());
+        Management updatedManagement = management.toBuilder()
+                .stopDrug(managementDTO.isStopDrug())
+                .exercise(managementDTO.isExercise())
+                .meal(managementDTO.getMeal())
+                .medication(managementDTO.getMedication())
+                .report(report)
+                .build();
+        managementRepository.save(updatedManagement);
     }
 
     private Report processReport(Long memberId, ManagementDTO managementDTO) {
         int totalPoints = calculatePoints(managementDTO);
         int completedTasks = calculateCompletedTasks(managementDTO);
         int dailyGoals = 25 * completedTasks;
+        LocalDate today = LocalDate.now();
         return reportRepository.findByMemberId(memberId)
-                .map(existingReport -> {
-                    int updatedMaximumDays = existingReport.getMaximumDays() + 1; // maximumDays를 1 증가
-                    existingReport.applyUpdates(totalPoints, updatedMaximumDays, dailyGoals);
-                    return reportRepository.save(existingReport);
-                })
-                .orElseGet(() -> {
-                    ReportDTO reportDTO = new ReportDTO(totalPoints, 1, dailyGoals); // 신규 사용자의 경우 maximumDays를 1로 설정
-                    return reportService.createReport(memberId, reportDTO);
-                });
+                .map(existingReport -> updateExistingReport(existingReport, memberId, totalPoints, dailyGoals, today))
+                .orElseGet(() -> reportService.createReport(memberId, new ReportDTO(totalPoints, 1, dailyGoals)));
     }
 
     private int calculatePoints(ManagementDTO managementDTO) {
@@ -72,15 +75,25 @@ public class ManagementService {
         return tasks;
     }
 
-    private void updateManagement(Management management, ManagementDTO managementDTO, Report report) {
-        Management updatedManagement = management.toBuilder()
-                .stopDrug(managementDTO.isStopDrug())
-                .exercise(managementDTO.isExercise())
-                .meal(managementDTO.getMeal())
-                .medication(managementDTO.getMedication())
-                .member(management.getMember()) // member 필드 설정
-                .report(report) // 업데이트된 report 객체 설정
-                .build();
-        managementRepository.save(updatedManagement);
+    private Report updateExistingReport(Report existingReport, Long memberId, int totalPoints, int dailyGoals, LocalDate today) {
+        Management management = managementRepository.findByMemberId(memberId)
+                .orElseThrow(() -> new EntityNotFoundException("사용자 ID에 대한 관리를 찾을 수 없습니다: " + memberId));
+        if (!today.equals(management.getLastManagedDate())) {
+            existingReport = existingReport.toBuilder()
+                    .maximumDays(existingReport.getMaximumDays() + 1)
+                    .point(totalPoints)
+                    .dailyGoals(dailyGoals)
+                    .build();
+            management = management.toBuilder()
+                    .lastManagedDate(today)
+                    .build();
+        } else {
+            existingReport = existingReport.toBuilder()
+                    .point(totalPoints)
+                    .dailyGoals(dailyGoals)
+                    .build();
+        }
+        managementRepository.save(management);
+        return reportRepository.save(existingReport);
     }
 }

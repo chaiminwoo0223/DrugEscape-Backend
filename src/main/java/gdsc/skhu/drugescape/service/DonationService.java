@@ -19,7 +19,7 @@ public class DonationService {
     @Transactional
     public int createDonation(Long reportId) {
         Report report = reportRepository.findById(reportId)
-                .orElseThrow(() -> new IllegalArgumentException("Report with ID " + reportId + " not found."));
+                .orElseThrow(() -> new IllegalArgumentException("ID가 " + reportId + "인 보고서를 찾을 수 없습니다."));
         Donation.builder()
                 .donatingPoint(report.getPoint())
                 .report(report)
@@ -30,9 +30,9 @@ public class DonationService {
     @Transactional
     public void recordDonation(Long reportId, int donatingPoint) {
         Report report = reportRepository.findById(reportId)
-                .orElseThrow(() -> new IllegalStateException("Report not found."));
+                .orElseThrow(() -> new IllegalStateException("보고서를 찾을 수 없습니다."));
         if (report.getPoint() < donatingPoint) {
-            throw new IllegalStateException("There are not enough points to donate.");
+            throw new IllegalStateException("기부할 포인트가 충분하지 않습니다.");
         }
         report.pointDecrease(donatingPoint);
         Donation donation = Donation.builder()

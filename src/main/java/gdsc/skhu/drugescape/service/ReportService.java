@@ -7,7 +7,6 @@ import gdsc.skhu.drugescape.domain.repository.MemberRepository;
 import gdsc.skhu.drugescape.domain.repository.ReportRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,14 +34,13 @@ public class ReportService {
     }
 
     @Transactional
-    @Cacheable(value = "reports", key = "#memberId")
     public Report getReport(Long memberId) {
         return reportRepository.findByMemberId(memberId)
-                .orElseThrow(() -> new EntityNotFoundException("Report not found for member id: " + memberId));
+                .orElseThrow(() -> new EntityNotFoundException("사용자 ID에 대한 보고서를 찾을 수 없습니다: " + memberId));
     }
 
     private Member findMemberById(Long memberId) {
         return memberRepository.findById(memberId)
-                .orElseThrow(() -> new EntityNotFoundException("Member not found with id: " + memberId));
+                .orElseThrow(() -> new EntityNotFoundException("ID가 있는 사용자를 찾을 수 없습니다: " + memberId));
     }
 }
