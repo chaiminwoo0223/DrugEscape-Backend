@@ -30,10 +30,15 @@ public class DonationService {
             throw new IllegalStateException("기부할 포인트가 충분하지 않습니다.");
         }
         report.pointDecrease(donationDTO.getDonatingPoint());
-        Donation donation = Donation.builder()
-                .donatingPoint(donationDTO.getDonatingPoint())
-                .report(report)
-                .build();
+        Donation donation = donationRepository.findByReportId(report.getId())
+                .map(latestDonation -> latestDonation.toBuilder()
+                        .donatedPoint(latestDonation.getDonatedPoint() + donationDTO.getDonatingPoint())
+                        .build())
+                .orElseGet(() -> Donation.builder()
+                        .donatingPoint(donationDTO.getDonatingPoint())
+                        .donatedPoint(donationDTO.getDonatingPoint())
+                        .report(report)
+                        .build());
         donationRepository.save(donation);
     }
 }
