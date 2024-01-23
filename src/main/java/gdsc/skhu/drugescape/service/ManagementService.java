@@ -86,7 +86,7 @@ public class ManagementService {
         int tasks = 0;
         if (managementDTO.getStopDrug() == 1) tasks++;
         if (managementDTO.getExercise() == 1) tasks++;
-        if (managementDTO.getMeal() >= 2) tasks++;
+        if (managementDTO.getMeal() >= 1) tasks++;
         if (managementDTO.getMedication() != 0) tasks++;
         return tasks;
     }
