@@ -2,6 +2,7 @@ services:
   database:
     image: mysql
     container_name: mysql-database
+    environment:
 
 application:
   image: chaiminwoo0223/DrugEscape
