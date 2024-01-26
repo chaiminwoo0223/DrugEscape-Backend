@@ -71,4 +71,13 @@ public class DonationController {
             return ResponseEntity.internalServerError().body("기부 처리 중 오류 발생");
         }
     }
+
+    @Operation(summary = "총 기부 포인트 조회", description = "지금까지 모인 기부 포인트를 확인합니다.")
+    @ApiResponse(responseCode = "200", description = "조회 성공")
+    @GetMapping("/donate/total")
+    public ResponseEntity<Integer> getTotalDonatedPoints() {
+        log.info("총 기부된 포인트 조회 요청");
+        int totalDonatedPoints = donationService.getTotalDonatedPoints();
+        return ResponseEntity.ok(totalDonatedPoints);
+    }
 }

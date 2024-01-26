@@ -9,6 +9,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class DonationService {
@@ -40,5 +42,12 @@ public class DonationService {
                         .report(report)
                         .build());
         donationRepository.save(donation);
+    }
+
+    @Transactional(readOnly = true)
+    public int getTotalDonatedPoints() {
+        return donationRepository.findAll().stream()
+                .mapToInt(Donation::getDonatedPoint)
+                .sum();
     }
 }
