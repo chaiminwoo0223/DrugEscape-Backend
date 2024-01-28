@@ -1,0 +1,54 @@
+version: '3.8'
+
+services:
+  database:
+    image: mysql:8.2.0
+    container_name: mysql-database
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_ROOT_HOST: ${MYSQL_ROOT_HOST}
+    volumes:
+      - ./db:/var/lib/mysql
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql # 초기화 스크립트, 스키마를 생성
+    ports:
+      - "3306:3306"
+    restart: always
+    networks:
+      - database-network
+
+  server:
+    image: chaiminwoo0223/drugescape:2.7
+    container_name: spring-boot-app
+    depends_on:
+      - database
+    environment:
+      DB_JDBC_URL: ${DB_JDBC_URL}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_SECOND: ${JWT_SECOND}
+    volumes:
+      - ./app:/app
+    ports:
+      - "8080:8080"
+    deploy:
+      resources:
+        limits:
+          memory: 2048MB
+    restart: on-failure
+    networks:
+      - database-network
+
+  redis:
+    image: redis:7.2.3
+    container_name: redis-server
+    ports:
+      - "6379:6379"
+    networks:
+      - database-network
+    restart: always
+
+networks:
+  database-network:
+    driver: bridge
