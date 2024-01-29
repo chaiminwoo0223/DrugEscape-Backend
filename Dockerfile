@@ -1,4 +1,4 @@
-FROM --platform=linux/amd64/v8 openjdk:17-jdk
+FROM --platform=linux/amd64/v8 openjdk:17-jdk-slim
 ARG JAR_FILE=build/libs/DrugEscape-0.0.1-SNAPSHOT.jar
 COPY ${JAR_FILE} app.jar
 ENTRYPOINT ["java","-jar","/app.jar"]
