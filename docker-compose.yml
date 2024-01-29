@@ -1,39 +1,19 @@
 version: '3.8'
 
 services:
-  database:
-    image: mysql
-    container_name: mysql-database
-    environment:
-      MYSQL_DATABASE: ${MYSQL_DATABASE}
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-      MYSQL_ROOT_HOST: ${MYSQL_ROOT_HOST}
-    ports:
-      - "3306:3306"
-    restart: always
-#    volumes:
-#      - ./mysql/conf.d:/etc/mysql/conf.d # MySQL 설정 파일 위치
-#    command:
-#      - "mysqld"
-#      - "--character-set-server=utf8mb4"
-#      - "--collation-server=utf8mb4_unicode_ci"
-    networks:
-      - database-network
-
   server:
-    image: chaiminwoo0223/drugescape:3.2
+    image: chaiminwoo0223/drugescape
     container_name: spring-boot-app
-    depends_on:
-      - database
-    build:
-      context: ./
-      dockerfile: Dockerfile
     environment:
       DB_JDBC_URL: ${DB_JDBC_URL}
       DB_USER: ${DB_USER}
       DB_PASSWORD: ${DB_PASSWORD}
       JWT_SECRET: ${JWT_SECRET}
       JWT_SECOND: ${JWT_SECOND}
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
+      GOOGLE_REDIRECT_URI: ${GOOGLE_REDIRECT_URI}
+      GOOGLE_TOKEN_URL: ${GOOGLE_TOKEN_URL}
     ports:
       - "8080:8080"
     restart: on-failure
@@ -42,17 +22,8 @@ services:
         limits:
           memory: 2048MB
     networks:
-      - database-network
-
-  redis:
-    image: redis
-    container_name: redis-server
-    ports:
-      - "6379:6379"
-    networks:
-      - database-network
-    restart: always
+      - drugescape-network
 
 networks:
-  database-network:
+  drugescape-network:
     driver: bridge
