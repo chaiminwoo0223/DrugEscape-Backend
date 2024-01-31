@@ -43,33 +43,21 @@ public class TokenProvider {
         long nowTime = (new Date()).getTime();
         Date accessTokenExpiredTime = new Date(nowTime + accessTokenValidityTime);
         Date refreshTokenExpiredTime = new Date(nowTime + refreshTokenValidityTime);
-        String accessToken = Jwts.builder()
-                .setSubject(member.getId().toString())
-                .claim("auth", member.getRole().name())
-                .setExpiration(accessTokenExpiredTime)
-                .signWith(key, SignatureAlgorithm.HS256)
-                .compact();
-        String refreshToken = Jwts.builder()
-                .setSubject(member.getId().toString())
-                .claim("auth", member.getRole().name())
-                .setExpiration(refreshTokenExpiredTime)
-                .signWith(key, SignatureAlgorithm.HS256)
-                .compact();
+        String accessToken = buildToken(member.getId().toString(), member.getRole().name(), accessTokenExpiredTime);
+        String refreshToken = buildToken(member.getId().toString(), member.getRole().name(), refreshTokenExpiredTime);
         return TokenDTO.builder()
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
                 .build();
     }
 
-    public Authentication getAuthentication(String accessToken) {
-        Claims claims = parseClaims(accessToken);
-        if (claims.get("auth") == null) {
-            throw new RuntimeException("권한 정보가 없는 토큰입니다.");
-        }
-        Collection<? extends GrantedAuthority> authorities = Arrays.stream(claims.get("auth").toString().split(","))
-                .map(SimpleGrantedAuthority::new)
-                .collect(Collectors.toList());
-        return new UsernamePasswordAuthenticationToken(claims.getSubject(), "", authorities);
+    private String buildToken(String subject, String authClaim, Date expiration) {
+        return Jwts.builder()
+                .setSubject(subject)
+                .claim("auth", authClaim)
+                .setExpiration(expiration)
+                .signWith(key, SignatureAlgorithm.HS256)
+                .compact();
     }
 
     public String resolveToken(HttpServletRequest request) {
@@ -95,13 +83,24 @@ public class TokenProvider {
         }
     }
 
-    public TokenDTO refreshToken(String expiredToken) {
+    public TokenDTO renewToken(String expiredToken) {
         if (!validateToken(expiredToken)) {
             throw new RuntimeException("유효하지 않거나 만료된 리프레시 토큰입니다.");
         }
         Claims claims = parseClaims(expiredToken);
         String subject = claims.getSubject();
         return createTokenForSubject(subject);
+    }
+
+    public Authentication getAuthentication(String accessToken) {
+        Claims claims = parseClaims(accessToken);
+        if (claims.get("auth") == null) {
+            throw new RuntimeException("권한 정보가 없는 토큰입니다.");
+        }
+        Collection<? extends GrantedAuthority> authorities = Arrays.stream(claims.get("auth").toString().split(","))
+                .map(SimpleGrantedAuthority::new)
+                .collect(Collectors.toList());
+        return new UsernamePasswordAuthenticationToken(claims.getSubject(), "", authorities);
     }
 
     private Claims parseClaims(String accessToken) {

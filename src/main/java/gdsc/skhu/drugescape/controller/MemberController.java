@@ -7,7 +7,6 @@ import gdsc.skhu.drugescape.service.MemberService;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,6 +16,8 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.server.ResponseStatusException;
+
+import java.security.Principal;
 
 @Slf4j
 @RequestMapping("/drugescape")
@@ -71,7 +72,7 @@ public class MemberController {
     @PostMapping("/refresh")
     public ResponseEntity<TokenDTO> refresh(@RequestBody TokenDTO tokenDTO) {
         try {
-            TokenDTO newToken = memberService.refreshAccessToken(tokenDTO.getRefreshToken());
+            TokenDTO newToken = memberService.renewRefreshToken(tokenDTO.getRefreshToken());
             return ResponseEntity.ok(newToken);
         } catch (Exception e) {
             log.error("토큰 갱신 실패: ", e);
@@ -107,16 +108,23 @@ public class MemberController {
             @ApiResponse(responseCode = "500", description = "서버 내부 오류", content = @Content(schema = @Schema(implementation = ResponseErrorDTO.class)))
     })
     @GetMapping("/main")
-    public ResponseEntity<?> main(HttpServletRequest request) {
+    public ResponseEntity<?> main(Principal principal) {
+        if (principal == null) {
+            log.warn("Principal 객체가 null입니다. 사용자가 인증되지 않았습니다.");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(new ResponseErrorDTO("인증되지 않은 사용자", HttpStatus.UNAUTHORIZED.value()));
+        }
         try {
-            MemberDTO memberInfo = memberService.getAuthenticatedMemberInfo(request);
+            MemberDTO memberInfo = memberService.getAuthenticatedMemberInfo(principal);
             return ResponseEntity.ok(memberInfo);
         } catch (ResponseStatusException e) {
             log.warn("메인 페이지 요청 처리 중 예외 발생: 상태 코드 = {}, 이유 = {}", e.getStatusCode(), e.getReason());
-            return ResponseEntity.status(e.getStatusCode()).body(new ResponseErrorDTO(e.getReason(), e.getStatusCode().value()));
+            return ResponseEntity.status(e.getStatusCode())
+                    .body(new ResponseErrorDTO(e.getReason(), e.getStatusCode().value()));
         } catch (Exception e) {
             log.error("메인 페이지 요청 처리 중 예기치 않은 오류 발생", e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseErrorDTO("서버 내부 오류", HttpStatus.INTERNAL_SERVER_ERROR.value()));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ResponseErrorDTO("서버 내부 오류", HttpStatus.INTERNAL_SERVER_ERROR.value()));
         }
     }
 }
