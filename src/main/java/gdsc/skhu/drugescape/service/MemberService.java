@@ -7,17 +7,22 @@ import gdsc.skhu.drugescape.domain.repository.MemberRepository;
 import gdsc.skhu.drugescape.domain.dto.MemberDTO;
 import gdsc.skhu.drugescape.domain.dto.TokenDTO;
 import gdsc.skhu.drugescape.jwt.TokenProvider;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 import com.google.gson.reflect.TypeToken;
+import org.springframework.web.server.ResponseStatusException;
+
 import java.lang.reflect.Type;
 
 import java.net.URI;
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 public class MemberService {
@@ -115,5 +120,19 @@ public class MemberService {
             throw new RuntimeException("블랙리스트에 포함된 새로고침 토큰입니다.");
         }
         return tokenProvider.refreshToken(refreshToken);
+    }
+
+    public MemberDTO getAuthenticatedMemberInfo(HttpServletRequest request) {
+        String token = Optional.ofNullable(tokenProvider.resolveToken(request))
+                .filter(tokenProvider::validateToken)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "인증 실패"));
+        Authentication authentication = Optional.ofNullable(tokenProvider.getAuthentication(token))
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "인증 정보 없음"));
+        return memberRepository.findByEmail(authentication.getName())
+                .map(member -> MemberDTO.builder()
+                        .name(member.getName())
+                        .picture(member.getPicture())
+                        .build())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "사용자 정보를 찾을 수 없습니다."));
     }
 }

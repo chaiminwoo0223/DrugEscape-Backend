@@ -1,11 +1,13 @@
 package gdsc.skhu.drugescape.controller;
 
+import gdsc.skhu.drugescape.domain.dto.MemberDTO;
 import gdsc.skhu.drugescape.domain.dto.ResponseErrorDTO;
 import gdsc.skhu.drugescape.domain.dto.TokenDTO;
 import gdsc.skhu.drugescape.service.MemberService;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -98,16 +100,23 @@ public class MemberController {
         }
     }
 
-    @Operation(summary = "메인 페이지로 이동", description = "메인 페이지로 이동합니다.")
+    @Operation(summary = "메인 페이지", description = "메인 페이지로 이동하며, 인증된 사용자의 정보를 반환합니다.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "메인 페이지로 이동 성공"),
-            @ApiResponse(responseCode = "401", description = "인증 실패", content = @Content(schema = @Schema(implementation = ResponseErrorDTO.class)))
+            @ApiResponse(responseCode = "200", description = "메인 페이지로 이동 성공, 사용자 정보 포함", content = @Content(mediaType = "application/json", schema = @Schema(implementation = MemberDTO.class))),
+            @ApiResponse(responseCode = "401", description = "인증 실패", content = @Content(schema = @Schema(implementation = ResponseErrorDTO.class))),
+            @ApiResponse(responseCode = "500", description = "서버 내부 오류", content = @Content(schema = @Schema(implementation = ResponseErrorDTO.class)))
     })
     @GetMapping("/main")
-    public String Main() {
-        // 엑세스토큰이 유효하면 사용자 정보를 주는 코드
-        // 이름, 사진URL
-
-        return "메인 페이지로 넘어갑니다."; // 웹에 정보를 전달
+    public ResponseEntity<?> main(HttpServletRequest request) {
+        try {
+            MemberDTO memberInfo = memberService.getAuthenticatedMemberInfo(request);
+            return ResponseEntity.ok(memberInfo);
+        } catch (ResponseStatusException e) {
+            log.warn("메인 페이지 요청 처리 중 예외 발생: 상태 코드 = {}, 이유 = {}", e.getStatusCode(), e.getReason());
+            return ResponseEntity.status(e.getStatusCode()).body(new ResponseErrorDTO(e.getReason(), e.getStatusCode().value()));
+        } catch (Exception e) {
+            log.error("메인 페이지 요청 처리 중 예기치 않은 오류 발생", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseErrorDTO("서버 내부 오류", HttpStatus.INTERNAL_SERVER_ERROR.value()));
+        }
     }
 }

@@ -25,28 +25,39 @@ import java.util.stream.Collectors;
 public class TokenProvider {
     private final Key key;
     private final long accessTokenValidityTime;
+    private final long refreshTokenValidityTime;
     private final TokenBlackListService tokenBlackListService;
 
     public TokenProvider(@Value("${jwt.secret}") String secretKey,
                          @Value("${jwt.access-token-validity-in-milliseconds}") long accessTokenValidityTime,
+                         @Value("${jwt.refresh-token-validity-in-milliseconds}") long refreshTokenValidityTime,
                          TokenBlackListService tokenBlackListService) {
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
         this.key = Keys.hmacShaKeyFor(keyBytes);
         this.accessTokenValidityTime = accessTokenValidityTime;
+        this.refreshTokenValidityTime = refreshTokenValidityTime;
         this.tokenBlackListService = tokenBlackListService;
     }
 
     public TokenDTO createToken(Member member) {
         long nowTime = (new Date()).getTime();
-        Date tokenExpiredTime = new Date(nowTime + accessTokenValidityTime);
+        Date accessTokenExpiredTime = new Date(nowTime + accessTokenValidityTime);
+        Date refreshTokenExpiredTime = new Date(nowTime + refreshTokenValidityTime);
         String accessToken = Jwts.builder()
                 .setSubject(member.getId().toString())
                 .claim("auth", member.getRole().name())
-                .setExpiration(tokenExpiredTime)
+                .setExpiration(accessTokenExpiredTime)
+                .signWith(key, SignatureAlgorithm.HS256)
+                .compact();
+        String refreshToken = Jwts.builder()
+                .setSubject(member.getId().toString())
+                .claim("auth", member.getRole().name())
+                .setExpiration(refreshTokenExpiredTime)
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
         return TokenDTO.builder()
                 .accessToken(accessToken)
+                .refreshToken(refreshToken)
                 .build();
     }
 
