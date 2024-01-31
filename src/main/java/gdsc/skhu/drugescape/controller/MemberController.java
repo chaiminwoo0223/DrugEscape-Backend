@@ -105,6 +105,9 @@ public class MemberController {
     })
     @GetMapping("/main")
     public String Main() {
-        return "메인 페이지로 넘어갑니다.";
+        // 엑세스토큰이 유효하면 사용자 정보를 주는 코드
+        // 이름, 사진URL
+
+        return "메인 페이지로 넘어갑니다."; // 웹에 정보를 전달
     }
 }

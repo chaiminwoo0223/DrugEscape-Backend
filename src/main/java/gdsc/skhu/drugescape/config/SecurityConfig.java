@@ -43,10 +43,9 @@ public class SecurityConfig {
                                          "/refresh",
                                          "/manage",
                                          "/map/**",
-                                         "/donate",
                                          "/donate/**",
                                          "/share/**").hasAnyRole("USER", "ADMIN")
-                        .requestMatchers("/").hasAnyRole("ADMIN")
+                        .requestMatchers("/").hasAnyRole("ADMIN") // admin만 확인할 수 있다.
                         .anyRequest().authenticated()
                 )
                 .cors(cors -> cors.configurationSource(configurationSource()))

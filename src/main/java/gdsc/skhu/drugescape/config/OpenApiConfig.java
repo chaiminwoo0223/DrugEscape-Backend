@@ -18,7 +18,7 @@ public class OpenApiConfig {
         Info info = new Info()
                 .title("DrugEscape API Documentation")
                 .description("API 문서화")
-                .version("3.2.0");
+                .version("3.3.0");
 
         String JWTSchemeName = "JWT Authorization";
         SecurityRequirement securityRequirement = new SecurityRequirement().addList(JWTSchemeName);

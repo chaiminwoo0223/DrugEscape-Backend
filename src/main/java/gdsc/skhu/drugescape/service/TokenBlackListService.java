@@ -1,26 +1,38 @@
 package gdsc.skhu.drugescape.service;
 
-import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 @Service
 public class TokenBlackListService {
-    private final StringRedisTemplate redisTemplate;
+    private final ConcurrentHashMap<String, Long> tokenBlackList = new ConcurrentHashMap<>();
+    private final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
 
-    public TokenBlackListService(StringRedisTemplate redisTemplate) {
-        this.redisTemplate = redisTemplate;
+    public TokenBlackListService() {
+        initializeTokenCleanupTask();
+    }
+
+    private void initializeTokenCleanupTask() {
+        // 매일 만료된 토큰을 정리하는 작업을 스케줄링
+        scheduler.scheduleAtFixedRate(this::cleanupExpiredTokens, 1, 1, TimeUnit.DAYS);
+    }
+
+    private void cleanupExpiredTokens() {
+        long currentTime = System.currentTimeMillis();
+        tokenBlackList.entrySet().removeIf(entry -> entry.getValue() < currentTime);
     }
 
     public void addToBlackList(String token) {
-        // 토큰과 함께 "blacklist"를 키로 사용하여 Redis에 저장합니다.
-        redisTemplate.opsForValue().set("blacklist:" + token, "true", 7, TimeUnit.DAYS); // 만료 기간(7일)
+        long expiryTime = System.currentTimeMillis() + TimeUnit.DAYS.toMillis(7); // 7일 후 만료
+        tokenBlackList.put(token, expiryTime);
     }
 
     public boolean isBlackListed(String token) {
-        // 토큰이 블랙리스트에 있는지 Redis에서 확인합니다.
-        String result = redisTemplate.opsForValue().get("blacklist:" + token);
-        return result != null;
+        Long expiryTime = tokenBlackList.get(token);
+        return expiryTime != null && expiryTime >= System.currentTimeMillis();
     }
 }
