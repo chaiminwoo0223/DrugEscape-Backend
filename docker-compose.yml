@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   server:
-    image: chaiminwoo0223/drugescape
+    image: chaiminwoo0223/drugescape:4.0
     container_name: spring-boot-app
     environment:
       DB_JDBC_URL: ${DB_JDBC_URL}

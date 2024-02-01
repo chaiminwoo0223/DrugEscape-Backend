@@ -72,6 +72,7 @@ public class DonationController {
         }
     }
 
+    // 추후, 회의를 통해 제거 or 변화
     @Operation(summary = "총 기부 포인트 조회", description = "지금까지 모인 기부 포인트를 확인합니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "조회 성공 - 총 기부된 포인트의 합계를 반환합니다."),

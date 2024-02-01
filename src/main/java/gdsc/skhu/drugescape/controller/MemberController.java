@@ -3,6 +3,7 @@ package gdsc.skhu.drugescape.controller;
 import gdsc.skhu.drugescape.domain.dto.MemberDTO;
 import gdsc.skhu.drugescape.domain.dto.ResponseErrorDTO;
 import gdsc.skhu.drugescape.domain.dto.TokenDTO;
+import gdsc.skhu.drugescape.service.DonationService;
 import gdsc.skhu.drugescape.service.MemberService;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -26,6 +27,7 @@ import java.security.Principal;
 @Tag(name = "Member API", description = "사용자 관련 API")
 public class MemberController {
     private final MemberService memberService;
+    private final DonationService donationService;
 
     @Operation(summary = "로그인/회원가입", description = "Google OAuth2를 통한 로그인 및 회원가입을 처리합니다.")
     @ApiResponses(value = {
@@ -125,6 +127,24 @@ public class MemberController {
             log.error("메인 페이지 요청 처리 중 예기치 않은 오류 발생", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new ResponseErrorDTO("서버 내부 오류", HttpStatus.INTERNAL_SERVER_ERROR.value()));
+        }
+    }
+
+    @Operation(summary = "관리자 페이지", description = "관리자 페이지로 이동하며, 총 기부 포인트를 반환합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "관리자 페이지로 이동 성공"),
+            @ApiResponse(responseCode = "401", description = "인증되지 않은 사용자 - 로그인이 필요합니다.", content = @Content),
+            @ApiResponse(responseCode = "500", description = "서버 내부 오류 - 요청 처리 중 예기치 못한 오류가 발생했습니다.", content = @Content)
+    })
+    @GetMapping("/admin")
+    public ResponseEntity<Integer> admin(Principal principal) {
+        memberService.upgradeToAdminRole(principal);
+        try {
+            int totalDonatedPoints = donationService.getTotalDonatedPoints();
+            return ResponseEntity.ok(totalDonatedPoints);
+        } catch (Exception e) {
+            log.error("총 기부 포인트 조회 중 오류 발생", e);
+            return ResponseEntity.internalServerError().build();
         }
     }
 }

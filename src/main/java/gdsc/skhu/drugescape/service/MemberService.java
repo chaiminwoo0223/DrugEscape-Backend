@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
@@ -133,6 +134,28 @@ public class MemberService {
                         .picture(member.getPicture())
                         .build())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "사용자 정보를 찾을 수 없습니다."));
+    }
+
+    @Transactional
+    public void upgradeToAdminRole(Principal principal) {
+        if (!(principal instanceof Authentication authentication)) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "인증 처리 중 오류 발생");
+        }
+        Member member = getAuthenticatedMember(authentication);
+        upgradeMemberRoleIfNotAdmin(member);
+    }
+
+    private Member getAuthenticatedMember(Authentication authentication) {
+        Long memberId = tryParseMemberId(authentication.getName());
+        return memberRepository.findById(memberId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "사용자 정보를 찾을 수 없습니다."));
+    }
+
+    private void upgradeMemberRoleIfNotAdmin(Member member) {
+        if (member.getRole() != Role.ADMIN) {
+            member.changeToAdmin();
+            memberRepository.save(member);
+        }
     }
 
     private Long tryParseMemberId(String memberIdStr) {

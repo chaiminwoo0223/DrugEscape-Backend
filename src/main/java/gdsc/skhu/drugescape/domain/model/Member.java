@@ -35,4 +35,8 @@ public class Member {
     @OneToMany(mappedBy = "member", fetch = FetchType.LAZY)
     @JsonManagedReference
     private List<Report> reports;
+
+    public void changeToAdmin() {
+        this.role = Role.ADMIN;
+    }
 }
