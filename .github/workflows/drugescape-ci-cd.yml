@@ -45,11 +45,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: SSH Remote connect and Docker
-      uses: appleboy/ssh-action@v1.0.3
+      uses: appleboy/ssh-action@master
       with:
         host: ${{secrets.REMOTE_HOST}}
         username: ${{secrets.REMOTE_SSH_ID}}
         key: ${{secrets.REMOTE_SSH_KEY}}
+        passphrase: ${{secrets.REMOTE_SSH_PASSPHRASE}}
         port: ${{secrets.REMOTE_SSH_PORT}}
         script: |
           cd ${{secrets.REMOTE_DOCKER_PATH}}
