@@ -44,16 +44,14 @@ jobs:
     needs: Build
     runs-on: ubuntu-latest
     steps:
-    - name: SSH Remote connect and Docker
-      uses: appleboy/ssh-action@v0.1.4
+    - name: Execute remote SSH commands
+      uses: fifsky/ssh-action@master
       with:
-        host: ${{secrets.REMOTE_HOST}}
-        username: ${{secrets.REMOTE_SSH_ID}}
-        key: ${{secrets.REMOTE_SSH_KEY}}
-        passphrase: ${{secrets.REMOTE_SSH_PASSPHRASE}}
-        port: ${{secrets.REMOTE_SSH_PORT}}
-        script: |
+        command: |
           cd ${{secrets.REMOTE_DOCKER_PATH}}
           docker compose down
           docker pull ${{secrets.DOCKER_USERNAME}}/${{secrets.DOCKER_REPOSITORY}}
           docker compose up -d
+        host: ${{ secrets.REMOTE_HOST }}
+        user: ${{ secrets.REMOTE_SSH_ID }}
+        key: ${{ secrets.REMOTE_SSH_KEY }}
