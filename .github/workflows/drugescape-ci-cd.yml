@@ -48,7 +48,6 @@ jobs:
       uses: fifsky/ssh-action@master
       with:
         command: |
-          cd "${{ secrets.REMOTE_DOCKER_PATH }}"
           docker compose down
           docker pull ${{secrets.DOCKER_USERNAME}}/${{secrets.DOCKER_REPOSITORY}}
           docker compose up -d
