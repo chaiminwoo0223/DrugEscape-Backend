@@ -42,7 +42,7 @@ jobs:
   Deploy:
     name: Deploy application
     needs: Build
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
     - name: SSH Remote connect and Docker
       uses: appleboy/ssh-action@master
