@@ -44,8 +44,8 @@ jobs:
     needs: Build
     runs-on: ubuntu-latest
     steps:
-    - name: SSH Remote connect and Docker
-      uses: appleboy/ssh-action@master
+    - name: SSH Remote Connect and Docker
+      uses: appleboy/ssh-action@v1.0.3
       with:
         host: ${{secrets.REMOTE_HOST}}
         username: ${{secrets.REMOTE_SSH_ID}}
