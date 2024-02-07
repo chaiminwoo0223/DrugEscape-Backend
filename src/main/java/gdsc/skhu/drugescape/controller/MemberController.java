@@ -21,6 +21,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.security.Principal;
 
 @Slf4j
+@CrossOrigin(origins = "http://localhost:8080")
 @RequestMapping("/drugescape")
 @RestController
 @RequiredArgsConstructor

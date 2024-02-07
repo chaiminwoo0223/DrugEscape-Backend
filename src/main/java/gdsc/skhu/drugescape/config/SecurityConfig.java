@@ -36,7 +36,9 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorizeRequests -> authorizeRequests
                         .requestMatchers("/v3/api-docs/**",
                                          "/swagger-ui/**",
-                                         "/drugescape/**").permitAll()
+                                         "/drugescape/**",
+                                         "https://drugescape.duckdns.org/**",
+                                         "http://localhost:8080").permitAll()
                         .requestMatchers("/main",
                                          "/login",
                                          "/logout",
