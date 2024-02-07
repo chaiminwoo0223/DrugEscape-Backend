@@ -2,7 +2,7 @@ version: '3.9'
 
 services:
   server:
-    image: chaiminwoo0223/drugescape:4.1 # 마지막에는 tag도 삭제해야 한다.
+    image: chaiminwoo0223/drugescape:4.2 # 마지막에는 tag도 삭제해야 한다.
     container_name: spring-boot-app
     environment:
       DB_JDBC_URL: ${DB_JDBC_URL}
