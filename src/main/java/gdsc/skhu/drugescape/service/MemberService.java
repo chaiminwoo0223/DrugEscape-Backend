@@ -96,9 +96,6 @@ public class MemberService {
 
     public TokenDTO googleLoginSignup(String googleAccessToken) {
         MemberDTO memberDTO = getMemberDTO(googleAccessToken);
-        if (Boolean.FALSE.equals(memberDTO.getVerifiedEmail())) {
-            throw new RuntimeException("이 사용자는 이메일 인증을 받지 않았습니다.");
-        }
         Member member = memberRepository.findByEmail(memberDTO.getEmail()).orElseGet(() ->
                 memberRepository.save(Member.builder()
                         .email(memberDTO.getEmail())

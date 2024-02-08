@@ -3,6 +3,7 @@ package gdsc.skhu.drugescape.controller;
 import gdsc.skhu.drugescape.domain.dto.DonationDTO;
 import gdsc.skhu.drugescape.domain.dto.ResponseErrorDTO;
 import gdsc.skhu.drugescape.service.DonationService;
+import gdsc.skhu.drugescape.service.MemberService;
 import io.swagger.v3.oas.annotations.*;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -23,6 +24,7 @@ import java.security.Principal;
 @Tag(name = "Donation API", description = "기부 관련 API")
 public class DonationController {
     private final DonationService donationService;
+    private final MemberService memberService;
 
     @Operation(summary = "기부 포인트 조회", description = "사용자가 기부할 수 있는 현재 포인트를 조회합니다.")
     @ApiResponses(value = {
@@ -80,7 +82,8 @@ public class DonationController {
             @ApiResponse(responseCode = "500", description = "서버 내부 오류 - 요청 처리 중 예기치 못한 오류가 발생했습니다.", content = @Content)
     })
     @GetMapping("/donate/total")
-    public ResponseEntity<Integer> getTotalDonatedPoints() {
+    public ResponseEntity<Integer> getTotalDonatedPoints(Principal principal) {
+        memberService.upgradeToAdminRole(principal);
         try {
             int totalDonatedPoints = donationService.getTotalDonatedPoints();
             return ResponseEntity.ok(totalDonatedPoints);
