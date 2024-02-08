@@ -8,6 +8,7 @@ import gdsc.skhu.drugescape.service.MemberService;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,10 +19,10 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.net.URI;
 import java.security.Principal;
 
 @Slf4j
-@CrossOrigin(origins = "http://localhost:8080")
 @RequestMapping("/drugescape")
 @RestController
 @RequiredArgsConstructor
@@ -38,9 +39,8 @@ public class MemberController {
             @ApiResponse(responseCode = "500", description = "서버 내부 오류", content = @Content(schema = @Schema(implementation = ResponseErrorDTO.class)))
     })
     @PostMapping("/login")
-    public ResponseEntity<?> loginOrSignUp(String googleAccessToken) {
+    public ResponseEntity<?> loginOrSignUp(TokenDTO tokenDTO) {
         try {
-            TokenDTO tokenDTO = memberService.googleLoginSignup(googleAccessToken);
             return ResponseEntity.ok(tokenDTO);
         } catch (RuntimeException e) {
             log.error("런타임 예외 발생: ", e);
@@ -94,7 +94,10 @@ public class MemberController {
     public ResponseEntity<?> googleOAuth2Callback(@RequestParam(name = "code") String code) {
         try {
             String googleAccessToken = memberService.getGoogleAccessToken(code);
-            return loginOrSignUp(googleAccessToken);
+            TokenDTO tokenDTO = memberService.googleLoginSignup(googleAccessToken);
+            HttpHeaders headers = new HttpHeaders();
+            headers.setLocation(URI.create("https://drugescape.netlify.app"));
+            return new ResponseEntity<>(tokenDTO, headers, HttpStatus.FOUND);
         } catch (RuntimeException e) {
             log.error("런타임 예외 발생: ", e);
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);

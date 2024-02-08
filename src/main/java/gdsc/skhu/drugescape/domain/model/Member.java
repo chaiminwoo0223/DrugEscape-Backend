@@ -37,6 +37,6 @@ public class Member {
     private List<Report> reports;
 
     public void changeToAdmin() {
-        this.role = Role.ADMIN;
+        this.role = Role.ROLE_ADMIN;
     }
 }

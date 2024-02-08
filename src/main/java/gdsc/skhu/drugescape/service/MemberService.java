@@ -104,7 +104,7 @@ public class MemberService {
                         .email(memberDTO.getEmail())
                         .name(memberDTO.getName())
                         .picture(memberDTO.getPicture())
-                        .role(Role.USER)
+                        .role(Role.ROLE_USER)
                         .build())
         );
         return tokenProvider.createToken(member);
@@ -152,7 +152,7 @@ public class MemberService {
     }
 
     private void upgradeMemberRoleIfNotAdmin(Member member) {
-        if (member.getRole() != Role.ADMIN) {
+        if (member.getRole() != Role.ROLE_ADMIN) {
             member.changeToAdmin();
             memberRepository.save(member);
         }
