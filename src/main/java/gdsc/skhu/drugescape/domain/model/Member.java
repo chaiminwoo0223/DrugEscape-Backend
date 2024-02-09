@@ -36,6 +36,15 @@ public class Member {
     @JsonManagedReference
     private List<Report> reports;
 
+    @OneToMany(mappedBy = "member", orphanRemoval = true)
+    private List<Board> boards;     // 작성글
+
+    @OneToMany(mappedBy = "member", orphanRemoval = true)
+    private List<Comment> comments; // 댓글
+
+    @OneToMany(mappedBy = "member", orphanRemoval = true)
+    private List<Heart> hearts;       // 유저가 누른 좋아요
+
     public void changeToAdmin() {
         this.role = Role.ROLE_ADMIN;
     }

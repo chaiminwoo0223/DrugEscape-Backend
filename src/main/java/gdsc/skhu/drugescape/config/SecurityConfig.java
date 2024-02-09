@@ -30,6 +30,12 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         return http
+//                .oauth2Login(oauth2Login ->
+//                        oauth2Login
+//                                .loginPage("/drugescape/login") // Google 로그인 페이지로 리다이렉트
+//                                .redirectionEndpoint(redirectionEndpoint ->
+//                                        redirectionEndpoint.baseUri("/drugescape/callback")) // Google로부터 인증 응답을 받을 엔드포인트
+//                )
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(sessionManagement -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

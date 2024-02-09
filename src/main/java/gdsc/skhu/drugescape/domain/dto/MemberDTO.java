@@ -15,9 +15,6 @@ public class MemberDTO {
     @Schema(description = "이메일")
     private String email;
 
-    @Schema(description = "인증된 이메일")
-    private Boolean verifiedEmail;
-
     @Schema(description = "사진")
     private String picture;
 }
