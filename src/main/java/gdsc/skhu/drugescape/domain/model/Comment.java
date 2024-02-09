@@ -21,13 +21,12 @@ public class Comment {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id", nullable = false)
-    private Member member;      // 작성자
+    private Member member; // 작성자
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "board_id", nullable = false)
-    private Board board;    // 댓글이 달린 게시판
+    private Board board; // 댓글이 달린 게시판
 
-    // 추가된 생성자
     public Comment(Board board, Member member, String comment) {
         this.board = board;
         this.member = member;

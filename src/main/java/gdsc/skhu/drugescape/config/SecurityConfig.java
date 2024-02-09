@@ -30,12 +30,6 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         return http
-//                .oauth2Login(oauth2Login ->
-//                        oauth2Login
-//                                .loginPage("/drugescape/login") // Google 로그인 페이지로 리다이렉트
-//                                .redirectionEndpoint(redirectionEndpoint ->
-//                                        redirectionEndpoint.baseUri("/drugescape/callback")) // Google로부터 인증 응답을 받을 엔드포인트
-//                )
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(sessionManagement -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -56,7 +50,7 @@ public class SecurityConfig {
                                 "/map/**",
                                 "/donate/**",
                                 "/share/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
-                        .requestMatchers("/admin").hasAuthority("ROLE_ADMIN")
+                        .requestMatchers("/admin").hasAuthority("ROLE_ADMIN") // 반드시 수정, 빈칸으로 놔두면 에러 발생!
                         .anyRequest().authenticated()
                 )
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))

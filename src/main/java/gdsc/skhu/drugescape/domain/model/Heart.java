@@ -18,13 +18,12 @@ public class Heart extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id", nullable = false)
-    private Member member;      // 좋아요를 누른 유저
+    private Member member; // 좋아요를 누른 유저
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "board_id", nullable = false)
-    private Board board;    // 좋아요가 추가된 게시글
+    private Board board; // 좋아요가 추가된 게시글
 
-    // 추가된 생성자
     public Heart(Board board, Member member) {
         this.board = board;
         this.member = member;

@@ -24,11 +24,12 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 
-// "admin을 어떻게 처리할 것인가?"는 아직 안했다. --> 반드시 추가! --> 가장 마지막 수정!
-// 신고 기능도 아직 구현하지 않았다!
-// 검색 기능도 아직 구현하지 않았다!
-// 게시글 삭제할 때, 자신이 게시한 글만 삭제할 수 있도록 반드시 수정해야 한다.
-// 이미지 처리 --> 웹과 협의!
+// "admin을 어떻게 처리할 것인가?"는 아직 안했다. --> 반드시 추가! --> 가장 마지막 수정! - 6
+// 신고 기능도 아직 구현하지 않았다! - 3
+// 검색 기능도 아직 구현하지 않았다! - 4
+// 게시글 삭제할 때, 자신이 게시한 글만 삭제할 수 있도록 반드시 수정해야 한다. - 2
+// 이미지 처리 --> 웹과 협의! --> 상담 요청! - 5
+// 페이지와 사이즈를 처리하는 것도 매우 중요 - 1
 @Slf4j
 @RestController
 @RequestMapping("/drugescape")
@@ -39,7 +40,6 @@ public class BoardController {
     private final CommentService commentService;
     private final HeartService heartService;
 
-    // 페이지와 사이즈를 처리하는 것도 매우 중요
     @GetMapping("/share")
     public ResponseEntity<Page<Board>> getBoardList(@RequestParam int page, @RequestParam int size) {
         try {

@@ -19,7 +19,7 @@ public class BoardDTO {
     private String content;
 
     @Schema(description = "이미지 URL", example = "https://example.com/image.jpg")
-    private String imageURL; // 변경된 부분
+    private String imageURL;
 
     @Schema(description = "좋아요 수", example = "+10")
     private Integer heartCnt;
