@@ -3,7 +3,6 @@ package gdsc.skhu.drugescape.controller;
 import gdsc.skhu.drugescape.domain.dto.DonationDTO;
 import gdsc.skhu.drugescape.domain.dto.ResponseErrorDTO;
 import gdsc.skhu.drugescape.service.DonationService;
-import gdsc.skhu.drugescape.service.MemberService;
 import io.swagger.v3.oas.annotations.*;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -24,7 +23,6 @@ import java.security.Principal;
 @Tag(name = "Donation API", description = "기부 관련 API")
 public class DonationController {
     private final DonationService donationService;
-    private final MemberService memberService;
 
     @Operation(summary = "기부 포인트 조회", description = "사용자가 기부할 수 있는 현재 포인트를 조회합니다.")
     @ApiResponses(value = {
@@ -71,25 +69,6 @@ public class DonationController {
         } catch (Exception e) {
             log.error("기부 처리 중 예기치 않은 오류 발생", e);
             return ResponseEntity.internalServerError().body("기부 처리 중 오류 발생");
-        }
-    }
-
-    // 추후, 회의를 통해 제거 or 변화
-    @Operation(summary = "총 기부 포인트 조회", description = "지금까지 모인 기부 포인트를 확인합니다.")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "조회 성공 - 총 기부된 포인트의 합계를 반환합니다."),
-            @ApiResponse(responseCode = "401", description = "인증되지 않은 사용자 - 로그인이 필요합니다.", content = @Content),
-            @ApiResponse(responseCode = "500", description = "서버 내부 오류 - 요청 처리 중 예기치 못한 오류가 발생했습니다.", content = @Content)
-    })
-    @GetMapping("/donate/total")
-    public ResponseEntity<Integer> getTotalDonatedPoints(Principal principal) {
-        memberService.upgradeToAdminRole(principal);
-        try {
-            int totalDonatedPoints = donationService.getTotalDonatedPoints();
-            return ResponseEntity.ok(totalDonatedPoints);
-        } catch (Exception e) {
-            log.error("총 기부 포인트 조회 중 오류 발생", e);
-            return ResponseEntity.internalServerError().build();
         }
     }
 }

@@ -3,6 +3,7 @@ package gdsc.skhu.drugescape.service;
 import gdsc.skhu.drugescape.domain.model.Board;
 import gdsc.skhu.drugescape.domain.model.Comment;
 import gdsc.skhu.drugescape.domain.model.Member;
+import gdsc.skhu.drugescape.domain.model.Role;
 import gdsc.skhu.drugescape.domain.repository.BoardRepository;
 import gdsc.skhu.drugescape.domain.repository.CommentRepository;
 import gdsc.skhu.drugescape.domain.repository.MemberRepository;
@@ -37,10 +38,17 @@ public class CommentService {
     @Transactional
     public void deleteComment(Long boardId, Long commentId, Long memberId) {
         Comment comment = commentRepository.findByIdAndBoardId(commentId, boardId)
-                .orElseThrow(() -> new ResourceNotFoundException("해당 ID의 댓글을 찾을 수 없습니다: " + commentId));
-        if (!comment.getMember().getId().equals(memberId)) {
+                .orElseThrow(() -> new ResourceNotFoundException("해당 댓글을 찾을 수 없습니다: " + commentId));
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new ResourceNotFoundException("해당 회원을 찾을 수 없습니다: " + memberId));
+        if (isAuthorizedToDelete(member, comment)) { // 관리자 또는 댓글 소유자일 경우 삭제 실행
+            commentRepository.delete(comment);
+        } else {
             throw new AccessDeniedException("댓글 삭제 권한이 없습니다.");
         }
-        commentRepository.delete(comment);
+    }
+
+    private boolean isAuthorizedToDelete(Member member, Comment comment) {
+        return member.getRole().equals(Role.ROLE_ADMIN) || comment.getMember().getId().equals(member.getId());
     }
 }
