@@ -22,9 +22,8 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 
-// "admin을 어떻게 처리할 것인가?"는 아직 안했다. --> 반드시 추가! --> 가장 마지막 수정! - 2
+// "admin을 어떻게 처리할 것인가?"는 아직 안했다. --> 반드시 추가! --> 가장 마지막 수정! - 3
 // 검색 기능도 아직 구현하지 않았다! - 1
-// 댓글 수도 추가하자! - 2
 // 이미지 처리 --> 웹과 협의! --> 상담 요청! - 5
 @Slf4j
 @RestController

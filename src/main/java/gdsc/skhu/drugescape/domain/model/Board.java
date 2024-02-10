@@ -26,6 +26,9 @@ public class Board extends BaseEntity {
     @Column(nullable = false)
     private int heartCnt;
 
+    @Column(nullable = false)
+    private int CommentCnt;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id", nullable = false)
     @JsonBackReference

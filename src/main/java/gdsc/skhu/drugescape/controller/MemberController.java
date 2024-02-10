@@ -93,10 +93,11 @@ public class MemberController {
         try {
             String googleAccessToken = memberService.getGoogleAccessToken(code);
             TokenDTO tokenDTO = memberService.googleLoginSignup(googleAccessToken);
-            String sessionToken = memberService.createSessionToken(tokenDTO);
-            String redirectURL = "https://drugescape.netlify.app/path?sessionToken=" + sessionToken;
-            response.sendRedirect(redirectURL);
-            return null;
+//            String sessionToken = memberService.createSessionToken(tokenDTO);
+//            String redirectURL = "https://drugescape.netlify.app/path?sessionToken=" + sessionToken;
+//            response.sendRedirect(redirectURL);
+//            return null;
+            return ResponseEntity.ok(tokenDTO); // 게시판 기능 테스트하기 위해 추가!
         } catch (Exception e) {
             log.error("Callback 처리 중 오류 발생", e);
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Callback 처리 중 오류 발생", e);
@@ -130,6 +131,12 @@ public class MemberController {
         }
     }
 
+    @Operation(summary = "세션 토큰으로 토큰 검색", description = "제공된 세션 토큰을 사용하여 저장된 엑세스 토큰과 리프레시 토큰을 검색합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "토큰 검색 성공", content = @Content(mediaType = "application/json", schema = @Schema(implementation = TokenDTO.class))),
+            @ApiResponse(responseCode = "404", description = "토큰을 찾을 수 없음", content = @Content(schema = @Schema(implementation = ResponseErrorDTO.class))),
+            @ApiResponse(responseCode = "500", description = "서버 내부 오류", content = @Content(schema = @Schema(implementation = ResponseErrorDTO.class)))
+    })
     @GetMapping("/retrieveTokens")
     public ResponseEntity<TokenDTO> retrieveTokens(@RequestParam(name = "sessionToken") String sessionToken) {
         TokenDTO tokenDTO = memberService.retrieveSessionToken(sessionToken);

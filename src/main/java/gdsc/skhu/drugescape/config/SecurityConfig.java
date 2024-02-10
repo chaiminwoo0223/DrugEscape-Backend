@@ -46,7 +46,7 @@ public class SecurityConfig {
                                 "/login",
                                 "/logout",
                                 "/refresh",
-                                "tokens",
+                                "/retrieveTokens",
                                 "/manage",
                                 "/map/**",
                                 "/donate/**",

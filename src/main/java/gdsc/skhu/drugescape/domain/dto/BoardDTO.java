@@ -28,6 +28,9 @@ public class BoardDTO {
     @Schema(description = "좋아요 수", example = "+10")
     private Integer heartCnt;
 
+    @Schema(description = "댓글 수", example = "+34")
+    private Integer commentCnt;
+
     @Schema(description = "만든 날짜", example = "2024.02.02")
     private String createdAt;
 
@@ -45,6 +48,7 @@ public class BoardDTO {
                 .content(board.getContent())
                 .memberName(board.getMember().getName()) // 작성자 이름 설정
                 .heartCnt(board.getHeartCnt())
+                .commentCnt(board.getCommentCnt())
                 .createdAt(board.getCreatedAt() != null ? board.getCreatedAt().format(formatter) : null)
                 .lastModifiedAt(board.getLastModifiedAt() != null ? board.getLastModifiedAt().format(formatter) : null)
                 .comments(commentDTOs) // 댓글 목록 설정

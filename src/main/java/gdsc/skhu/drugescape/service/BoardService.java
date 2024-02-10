@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.data.domain.Page;
 
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -38,9 +39,13 @@ public class BoardService {
     public Page<BoardDTO> getBoardList(Pageable pageable) {
         return boardRepository.findAll(pageable)
                 .map(board -> {
+                    int commentCount = commentRepository.countByBoardId(board.getId());
                     List<Comment> comments = commentRepository.findByBoardId(board.getId());
                     List<CommentDTO> commentDTOs = comments.stream()
-                            .map(CommentDTO::from) // from 메소드를 사용하여 CommentDTO 인스턴스 생성
+                            .map(comment -> new CommentDTO(
+                                    comment.getId(),
+                                    comment.getContent(),
+                                    comment.getMember().getName()))
                             .collect(Collectors.toList());
                     return new BoardDTO(
                             board.getId(),
@@ -48,8 +53,9 @@ public class BoardService {
                             board.getContent(),
                             board.getMember().getName(), // 작성자 이름 추가
                             board.getHeartCnt(),
-                            board.getCreatedAt().toString(),
-                            board.getLastModifiedAt().toString(),
+                            commentCount, // 댓글 수 설정
+                            board.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy.MM.dd")),
+                            board.getLastModifiedAt().format(DateTimeFormatter.ofPattern("yyyy.MM.dd")),
                             commentDTOs
                     );
                 });
@@ -63,8 +69,19 @@ public class BoardService {
         List<CommentDTO> commentDTOs = comments.stream()
                 .map(CommentDTO::from)
                 .collect(Collectors.toList());
-        return BoardDTO.from(board, commentDTOs); // 게시글 정보와 댓글 목록을 포함한 BoardDTO 반환
+        return BoardDTO.builder()
+                .id(board.getId())
+                .title(board.getTitle())
+                .content(board.getContent())
+                .memberName(board.getMember().getName())
+                .heartCnt(board.getHeartCnt())
+                .commentCnt(comments.size()) // 여기에 댓글 수를 동적으로 설정
+                .createdAt(board.getCreatedAt() != null ? board.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy.MM.dd")) : null)
+                .lastModifiedAt(board.getLastModifiedAt() != null ? board.getLastModifiedAt().format(DateTimeFormatter.ofPattern("yyyy.MM.dd")) : null)
+                .comments(commentDTOs)
+                .build();
     }
+
 
     @Transactional
     public Long createBoard(BoardDTO boardDTO, Long memberId) {
