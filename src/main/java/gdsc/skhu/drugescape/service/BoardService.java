@@ -16,7 +16,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.data.domain.Page;
 
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -38,48 +37,14 @@ public class BoardService {
     @Transactional
     public Page<BoardDTO> getBoardList(Pageable pageable) {
         return boardRepository.findAll(pageable)
-                .map(board -> {
-                    int commentCount = commentRepository.countByBoardId(board.getId());
-                    List<Comment> comments = commentRepository.findByBoardId(board.getId());
-                    List<CommentDTO> commentDTOs = comments.stream()
-                            .map(comment -> new CommentDTO(
-                                    comment.getId(),
-                                    comment.getContent(),
-                                    comment.getMember().getName()))
-                            .collect(Collectors.toList());
-                    return new BoardDTO(
-                            board.getId(),
-                            board.getTitle(),
-                            board.getContent(),
-                            board.getMember().getName(), // 작성자 이름 추가
-                            board.getHeartCnt(),
-                            commentCount, // 댓글 수 설정
-                            board.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy.MM.dd")),
-                            board.getLastModifiedAt().format(DateTimeFormatter.ofPattern("yyyy.MM.dd")),
-                            commentDTOs
-                    );
-                });
+                .map(this::createBoardDTO);
     }
 
     @Transactional
     public BoardDTO getBoard(Long boardId) {
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new ResourceNotFoundException("해당 ID의 게시글을 찾을 수 없습니다: " + boardId));
-        List<Comment> comments = commentRepository.findByBoardId(boardId); // 게시글 ID로 댓글 목록 조회
-        List<CommentDTO> commentDTOs = comments.stream()
-                .map(CommentDTO::from)
-                .collect(Collectors.toList());
-        return BoardDTO.builder()
-                .id(board.getId())
-                .title(board.getTitle())
-                .content(board.getContent())
-                .memberName(board.getMember().getName())
-                .heartCnt(board.getHeartCnt())
-                .commentCnt(comments.size()) // 여기에 댓글 수를 동적으로 설정
-                .createdAt(board.getCreatedAt() != null ? board.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy.MM.dd")) : null)
-                .lastModifiedAt(board.getLastModifiedAt() != null ? board.getLastModifiedAt().format(DateTimeFormatter.ofPattern("yyyy.MM.dd")) : null)
-                .comments(commentDTOs)
-                .build();
+        return createBoardDTO(board);
     }
 
 
@@ -113,5 +78,14 @@ public class BoardService {
             throw new AccessDeniedException("게시글 삭제 권한이 없습니다.");
         }
         boardRepository.delete(board);
+    }
+
+    // 공통 BoardDTO 생성 로직
+    private BoardDTO createBoardDTO(Board board) {
+        List<Comment> comments = commentRepository.findByBoardId(board.getId());
+        List<CommentDTO> commentDTOs = comments.stream()
+                .map(CommentDTO::from)
+                .collect(Collectors.toList());
+        return BoardDTO.from(board, commentDTOs);
     }
 }

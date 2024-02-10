@@ -46,12 +46,12 @@ public class BoardDTO {
                 .id(board.getId())
                 .title(board.getTitle())
                 .content(board.getContent())
-                .memberName(board.getMember().getName()) // 작성자 이름 설정
+                .memberName(board.getMember().getName())
                 .heartCnt(board.getHeartCnt())
-                .commentCnt(board.getCommentCnt())
+                .commentCnt(commentDTOs.size()) // 댓글 수를 commentDTOs 리스트의 크기로 설정
                 .createdAt(board.getCreatedAt() != null ? board.getCreatedAt().format(formatter) : null)
                 .lastModifiedAt(board.getLastModifiedAt() != null ? board.getLastModifiedAt().format(formatter) : null)
-                .comments(commentDTOs) // 댓글 목록 설정
+                .comments(commentDTOs)
                 .build();
     }
 }
