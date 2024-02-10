@@ -13,11 +13,17 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class BoardDTO {
+    @Schema(description = "게시판 ID", example = "1")
+    private Long id; // 게시판 ID 추가
+
     @Schema(description = "제목", example = "처음 글 씁니다.")
     private String title;
 
     @Schema(description = "내용", example = "저는 ~~~")
     private String content;
+
+    @Schema(description = "작성자", example = "사용자명")
+    private String memberName; // 게시판 작성자 이름 추가
 
     @Schema(description = "좋아요 수", example = "+10")
     private Integer heartCnt;
@@ -34,8 +40,10 @@ public class BoardDTO {
     public static BoardDTO from(Board board, List<CommentDTO> commentDTOs) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd");
         return BoardDTO.builder()
+                .id(board.getId())
                 .title(board.getTitle())
                 .content(board.getContent())
+                .memberName(board.getMember().getName()) // 작성자 이름 설정
                 .heartCnt(board.getHeartCnt())
                 .createdAt(board.getCreatedAt() != null ? board.getCreatedAt().format(formatter) : null)
                 .lastModifiedAt(board.getLastModifiedAt() != null ? board.getLastModifiedAt().format(formatter) : null)

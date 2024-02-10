@@ -7,6 +7,7 @@ import gdsc.skhu.drugescape.domain.repository.BoardRepository;
 import gdsc.skhu.drugescape.domain.repository.CommentRepository;
 import gdsc.skhu.drugescape.domain.repository.MemberRepository;
 import gdsc.skhu.drugescape.exception.ResourceNotFoundException;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import org.springframework.transaction.annotation.Transactional;
@@ -34,20 +35,12 @@ public class CommentService {
     }
 
     @Transactional
-    public void deleteComment(Long commentId) {
-        if (!commentRepository.existsById(commentId)) {
-            throw new ResourceNotFoundException("해당 ID의 댓글을 찾을 수 없습니다: " + commentId);
+    public void deleteComment(Long boardId, Long commentId, Long memberId) {
+        Comment comment = commentRepository.findByIdAndBoardId(commentId, boardId)
+                .orElseThrow(() -> new ResourceNotFoundException("해당 ID의 댓글을 찾을 수 없습니다: " + commentId));
+        if (!comment.getMember().getId().equals(memberId)) {
+            throw new AccessDeniedException("댓글 삭제 권한이 없습니다.");
         }
-        commentRepository.deleteById(commentId);
+        commentRepository.delete(comment);
     }
-
-    @Transactional
-    public boolean isCommentOwner(Long commentId, Long memberId) {
-        return commentRepository.findById(commentId)
-                .map(Comment::getMember)
-                .map(Member::getId)
-                .filter(id -> id.equals(memberId))
-                .isPresent();
-    }
-
 }

@@ -10,6 +10,9 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CommentDTO {
+    @Schema(description = "댓글 ID", example = "1")
+    private Long id; // 댓글 ID 추가
+
     @Schema(description = "내용", example = "화이팅")
     private String content;
 
@@ -19,6 +22,7 @@ public class CommentDTO {
     // Comment 엔터티로부터 CommentDTO 생성하는 메소드에 작성자 이름을 설정하는 로직 추가
     public static CommentDTO from(Comment comment) {
         return CommentDTO.builder()
+                .id(comment.getId())
                 .content(comment.getContent())
                 .memberName(comment.getMember().getName()) // 작성자 이름 설정
                 .build();

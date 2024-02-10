@@ -46,6 +46,7 @@ public class SecurityConfig {
                                 "/login",
                                 "/logout",
                                 "/refresh",
+                                "tokens",
                                 "/manage",
                                 "/map/**",
                                 "/donate/**",
@@ -62,7 +63,11 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOriginPatterns(List.of("*")); // Adjust accordingly for production!
+        configuration.setAllowedOriginPatterns(List.of(
+                "https://drugescape.netlify.app",
+                "https://drugescape.duckdns.org",
+                "http://localhost:8080"
+        ));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setExposedHeaders(List.of("Access-Control-Allow-Credentials", "Authorization", "Set-Cookie"));

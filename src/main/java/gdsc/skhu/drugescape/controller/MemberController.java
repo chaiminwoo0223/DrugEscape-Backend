@@ -4,9 +4,11 @@ import gdsc.skhu.drugescape.domain.dto.MemberDTO;
 import gdsc.skhu.drugescape.domain.dto.ResponseErrorDTO;
 import gdsc.skhu.drugescape.domain.dto.TokenDTO;
 import gdsc.skhu.drugescape.service.MemberService;
+import io.jsonwebtoken.io.IOException;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -87,17 +89,17 @@ public class MemberController {
             @ApiResponse(responseCode = "500", description = "서버 내부 오류, Google OAuth2 처리 중 예기치 않은 오류가 발생했습니다.", content = @Content(schema = @Schema(implementation = ResponseErrorDTO.class)))
     })
     @GetMapping("/callback")
-    public ResponseEntity<?> googleOAuth2Callback(@RequestParam(name = "code") String code) {
+    public ResponseEntity<?> googleOAuth2Callback(@RequestParam(name = "code") String code, HttpServletResponse response) throws IOException {
         try {
             String googleAccessToken = memberService.getGoogleAccessToken(code);
             TokenDTO tokenDTO = memberService.googleLoginSignup(googleAccessToken);
-            return ResponseEntity.ok(tokenDTO);
-        } catch (RuntimeException e) {
-            log.error("런타임 예외 발생: ", e);
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
+            String sessionToken = memberService.createSessionToken(tokenDTO);
+            String redirectURL = "https://drugescape.netlify.app/path?sessionToken=" + sessionToken;
+            response.sendRedirect(redirectURL);
+            return null;
         } catch (Exception e) {
-            log.error("처리되지 않은 예외 발생: ", e);
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "예기치 않은 오류가 발생했습니다.", e);
+            log.error("Callback 처리 중 오류 발생", e);
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Callback 처리 중 오류 발생", e);
         }
     }
 
@@ -125,6 +127,16 @@ public class MemberController {
             log.error("메인 페이지 요청 처리 중 예기치 않은 오류 발생", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new ResponseErrorDTO("서버 내부 오류", HttpStatus.INTERNAL_SERVER_ERROR.value()));
+        }
+    }
+
+    @GetMapping("/retrieveTokens")
+    public ResponseEntity<TokenDTO> retrieveTokens(@RequestParam(name = "sessionToken") String sessionToken) {
+        TokenDTO tokenDTO = memberService.retrieveSessionToken(sessionToken);
+        if (tokenDTO != null) {
+            return ResponseEntity.ok(tokenDTO);
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
     }
 }

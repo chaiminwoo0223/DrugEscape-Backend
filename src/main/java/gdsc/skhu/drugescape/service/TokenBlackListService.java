@@ -17,7 +17,6 @@ public class TokenBlackListService {
     }
 
     private void initializeTokenCleanupTask() {
-        // 매일 만료된 토큰을 정리하는 작업을 스케줄링
         scheduler.scheduleAtFixedRate(this::cleanupExpiredTokens, 1, 1, TimeUnit.DAYS);
     }
 

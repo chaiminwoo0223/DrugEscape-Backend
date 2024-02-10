@@ -42,6 +42,7 @@ public class ManagementService {
         managementRepository.save(management);
     }
 
+
     private Management createManagement(Member member, ManagementDTO managementDTO, Report report) {
         return Management.builder()
                 .member(member)

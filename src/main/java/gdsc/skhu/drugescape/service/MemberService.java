@@ -7,6 +7,7 @@ import gdsc.skhu.drugescape.domain.repository.MemberRepository;
 import gdsc.skhu.drugescape.domain.dto.MemberDTO;
 import gdsc.skhu.drugescape.domain.dto.TokenDTO;
 import gdsc.skhu.drugescape.jwt.TokenProvider;
+import gdsc.skhu.drugescape.jwt.TokenStorage;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.security.core.Authentication;
@@ -23,6 +24,7 @@ import java.lang.reflect.Type;
 import java.net.URI;
 import java.security.Principal;
 import java.util.Map;
+import java.util.UUID;
 
 @Service
 public class MemberService {
@@ -34,6 +36,7 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final TokenProvider tokenProvider;
     private final TokenBlackListService tokenBlackListService;
+    private final TokenStorage tokenStorage;
 
     public MemberService(@Value("${GOOGLE_TOKEN_URL}") String googleTokenUrl,
                          @Value("${GOOGLE_CLIENT_ID}") String googleClientId,
@@ -41,7 +44,8 @@ public class MemberService {
                          @Value("${GOOGLE_REDIRECT_URI}") String googleRedirectUri,
                          MemberRepository memberRepository,
                          TokenProvider tokenProvider,
-                         TokenBlackListService tokenBlackListService) {
+                         TokenBlackListService tokenBlackListService,
+                         TokenStorage tokenStorage) {
         this.GOOGLE_TOKEN_URL = googleTokenUrl;
         this.GOOGLE_CLIENT_ID = googleClientId;
         this.GOOGLE_CLIENT_SECRET = googleClientSecret;
@@ -49,6 +53,7 @@ public class MemberService {
         this.memberRepository = memberRepository;
         this.tokenProvider = tokenProvider;
         this.tokenBlackListService = tokenBlackListService;
+        this.tokenStorage = tokenStorage;
     }
 
     public String getGoogleAccessToken(String code) {
@@ -117,6 +122,16 @@ public class MemberService {
             throw new RuntimeException("블랙리스트에 포함된 새로고침 토큰입니다.");
         }
         return tokenProvider.renewToken(refreshToken);
+    }
+
+    public String createSessionToken(TokenDTO tokenDTO) {
+        String sessionToken = UUID.randomUUID().toString();
+        tokenStorage.save(sessionToken, tokenDTO);
+        return sessionToken;
+    }
+
+    public TokenDTO retrieveSessionToken(String sessionToken) {
+        return tokenStorage.retrieve(sessionToken);
     }
 
     public MemberDTO getAuthenticatedMemberInfo(Principal principal) {

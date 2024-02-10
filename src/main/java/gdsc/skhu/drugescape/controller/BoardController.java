@@ -2,7 +2,6 @@ package gdsc.skhu.drugescape.controller;
 
 import gdsc.skhu.drugescape.domain.dto.BoardDTO;
 import gdsc.skhu.drugescape.domain.dto.CommentDTO;
-import gdsc.skhu.drugescape.domain.model.Board;
 import gdsc.skhu.drugescape.exception.ResourceNotFoundException;
 import gdsc.skhu.drugescape.service.BoardService;
 import gdsc.skhu.drugescape.service.CommentService;
@@ -23,9 +22,9 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 
-// "admin을 어떻게 처리할 것인가?"는 아직 안했다. --> 반드시 추가! --> 가장 마지막 수정! - 6
-// 신고 기능도 아직 구현하지 않았다! - 3
-// 검색 기능도 아직 구현하지 않았다! - 4
+// "admin을 어떻게 처리할 것인가?"는 아직 안했다. --> 반드시 추가! --> 가장 마지막 수정! - 2
+// 검색 기능도 아직 구현하지 않았다! - 1
+// 댓글 수도 추가하자! - 2
 // 이미지 처리 --> 웹과 협의! --> 상담 요청! - 5
 @Slf4j
 @RestController
@@ -43,9 +42,9 @@ public class BoardController {
             @ApiResponse(responseCode = "500", description = "서버 오류")
     })
     @GetMapping("/share")
-    public ResponseEntity<Page<Board>> getBoardList(Pageable pageable) {
+    public ResponseEntity<Page<BoardDTO>> getBoardList(Pageable pageable) {
         try {
-            Page<Board> boardPage = boardService.getBoardList(pageable);
+            Page<BoardDTO> boardPage = boardService.getBoardList(pageable);
             return ResponseEntity.ok(boardPage);
         } catch (Exception e) {
             log.error("게시글 리스트 조회 중 오류 발생: {}", e.getMessage());
@@ -197,25 +196,24 @@ public class BoardController {
         }
     }
 
-    @Operation(summary = "댓글 삭제", description = "게시글의 댓글을 삭제합니다.")
+    @Operation(summary = "댓글 삭제", description = "특정 게시판의 댓글을 삭제합니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "댓글 삭제 성공"),
             @ApiResponse(responseCode = "403", description = "삭제 권한 없음"),
             @ApiResponse(responseCode = "404", description = "댓글을 찾을 수 없음")
     })
-    @DeleteMapping("/comments/{commentId}")
-    public ResponseEntity<?> deleteComment(Principal principal, @PathVariable Long commentId) {
+    @DeleteMapping("/share/{boardId}/comments/{commentId}")
+    public ResponseEntity<?> deleteComment(Principal principal, @PathVariable Long boardId, @PathVariable Long commentId) {
         Long memberId = Long.parseLong(principal.getName());
         try {
-            if (!commentService.isCommentOwner(commentId, memberId)) {
-                log.warn("댓글 삭제 권한 없음: 사용자 {}는 댓글 {} 삭제 권한이 없습니다.", memberId, commentId);
-                return ResponseEntity.status(HttpStatus.FORBIDDEN).body("삭제 권한이 없습니다.");
-            }
-            commentService.deleteComment(commentId);
+            commentService.deleteComment(boardId, commentId, memberId);
             return ResponseEntity.ok().body("댓글이 성공적으로 삭제되었습니다.");
         } catch (ResourceNotFoundException e) {
             log.error("댓글 삭제 실패: {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("해당 댓글을 찾을 수 없습니다.");
+        } catch (AccessDeniedException e) {
+            log.error("댓글 삭제 권한 없음: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("삭제 권한이 없습니다.");
         } catch (Exception e) {
             log.error("댓글 삭제 중 예외 발생: {}", e.getMessage());
             return ResponseEntity.internalServerError().body("댓글 삭제 중 오류가 발생했습니다.");

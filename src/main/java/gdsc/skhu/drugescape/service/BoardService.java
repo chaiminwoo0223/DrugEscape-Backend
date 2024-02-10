@@ -11,6 +11,7 @@ import gdsc.skhu.drugescape.domain.repository.MemberRepository;
 import gdsc.skhu.drugescape.exception.ResourceNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.data.domain.Page;
@@ -33,10 +34,28 @@ public class BoardService {
         this.commentRepository = commentRepository;
     }
 
-    public Page<Board> getBoardList(Pageable pageable) {
-        return boardRepository.findAll(pageable);
+    @Transactional
+    public Page<BoardDTO> getBoardList(Pageable pageable) {
+        return boardRepository.findAll(pageable)
+                .map(board -> {
+                    List<Comment> comments = commentRepository.findByBoardId(board.getId());
+                    List<CommentDTO> commentDTOs = comments.stream()
+                            .map(CommentDTO::from) // from 메소드를 사용하여 CommentDTO 인스턴스 생성
+                            .collect(Collectors.toList());
+                    return new BoardDTO(
+                            board.getId(),
+                            board.getTitle(),
+                            board.getContent(),
+                            board.getMember().getName(), // 작성자 이름 추가
+                            board.getHeartCnt(),
+                            board.getCreatedAt().toString(),
+                            board.getLastModifiedAt().toString(),
+                            commentDTOs
+                    );
+                });
     }
 
+    @Transactional
     public BoardDTO getBoard(Long boardId) {
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new ResourceNotFoundException("해당 ID의 게시글을 찾을 수 없습니다: " + boardId));
@@ -60,24 +79,22 @@ public class BoardService {
     }
 
     @Transactional
-    public Long updateBoard(Long boardId, BoardDTO boardDTO, Long memberId) {
+    public void updateBoard(Long boardId, BoardDTO boardDTO, Long memberId) {
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new ResourceNotFoundException("해당 ID의 게시글을 찾을 수 없습니다: " + boardId));
         if (!board.getMember().getId().equals(memberId)) {
-            return -1L; // 권한이 없을 경우 음수 값을 반환하여 권한 없음을 표시
+            throw new AccessDeniedException("게시글 수정 권한이 없습니다.");
         }
         board.updateDetails(boardDTO.getTitle(), boardDTO.getContent());
-        return boardRepository.save(board).getId();
     }
 
     @Transactional
-    public boolean deleteBoardIfOwner(Long boardId, Long memberId) {
+    public void deleteBoardIfOwner(Long boardId, Long memberId) {
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new ResourceNotFoundException("해당 ID의 게시글을 찾을 수 없습니다: " + boardId));
         if (!board.getMember().getId().equals(memberId)) {
-            return false; // 권한이 없으면 false 반환
+            throw new AccessDeniedException("게시글 삭제 권한이 없습니다.");
         }
         boardRepository.delete(board);
-        return true; // 성공적으로 삭제하면 true 반환
     }
 }
