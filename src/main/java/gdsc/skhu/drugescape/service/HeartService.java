@@ -31,6 +31,8 @@ public class HeartService {
         if (!heartRepository.existsByBoardAndMember(board, member)) {
             Heart heart = new Heart(board, member);
             heartRepository.save(heart);
+            board.incrementHeartCount(); // 좋아요 개수 증가
+            boardRepository.save(board); // 업데이트된 게시글 저장
         }
     }
 
@@ -40,7 +42,10 @@ public class HeartService {
                 .orElseThrow(() -> new ResourceNotFoundException("해당 ID의 게시글을 찾을 수 없습니다: " + boardId));
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new ResourceNotFoundException("해당 ID의 회원을 찾을 수 없습니다: " + memberId));
-        heartRepository.findByBoardAndMember(board, member)
-                .ifPresent(heartRepository::delete);
+        heartRepository.findByBoardAndMember(board, member).ifPresent(heart -> {
+            heartRepository.delete(heart);
+            board.decrementHeartCount(); // 좋아요 개수 감소
+            boardRepository.save(board); // 업데이트된 게시글 저장
+        });
     }
 }

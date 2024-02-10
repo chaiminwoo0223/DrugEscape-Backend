@@ -40,4 +40,14 @@ public class CommentService {
         }
         commentRepository.deleteById(commentId);
     }
+
+    @Transactional
+    public boolean isCommentOwner(Long commentId, Long memberId) {
+        return commentRepository.findById(commentId)
+                .map(Comment::getMember)
+                .map(Member::getId)
+                .filter(id -> id.equals(memberId))
+                .isPresent();
+    }
+
 }

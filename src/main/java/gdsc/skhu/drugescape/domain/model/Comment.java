@@ -1,5 +1,6 @@
 package gdsc.skhu.drugescape.domain.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -16,20 +17,22 @@ public class Comment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private String comment;
+    @Column(columnDefinition = "TEXT", nullable = false)
+    private String content;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id", nullable = false)
+    @JsonBackReference
     private Member member; // 작성자
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "board_id", nullable = false)
+    @JsonBackReference
     private Board board; // 댓글이 달린 게시판
 
-    public Comment(Board board, Member member, String comment) {
+    public Comment(Board board, Member member, String content) {
         this.board = board;
         this.member = member;
-        this.comment = comment;
+        this.content = content;
     }
 }
