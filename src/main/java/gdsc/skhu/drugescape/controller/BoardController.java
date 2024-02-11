@@ -215,4 +215,10 @@ public class BoardController {
             return ResponseEntity.internalServerError().body("댓글 삭제 중 오류가 발생했습니다.");
         }
     }
+
+    @GetMapping("/share/search")
+    public ResponseEntity<Page<BoardDTO>> search(@RequestParam String keyword, Pageable pageable) {
+        Page<BoardDTO> searchResults = boardService.searchBoards(keyword, pageable);
+        return ResponseEntity.ok(searchResults);
+    }
 }

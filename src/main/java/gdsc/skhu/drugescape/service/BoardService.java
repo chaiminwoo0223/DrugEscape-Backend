@@ -84,6 +84,12 @@ public class BoardService {
         }
     }
 
+    @Transactional
+    public Page<BoardDTO> searchBoards(String keyword, Pageable pageable) {
+        return boardRepository.findByKeyword(keyword, pageable)
+                .map(this::createBoardDTO);
+    }
+
     private boolean isAuthorizedToDelete(Member member, Board board) {
         return member.getRole().equals(Role.ROLE_ADMIN) || board.getMember().getId().equals(member.getId());
     }

@@ -1,11 +1,14 @@
 package gdsc.skhu.drugescape.domain.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.util.List;
 
 @Entity
 @Builder(toBuilder = true)
@@ -33,6 +36,10 @@ public class Board extends BaseEntity {
     @JoinColumn(name = "member_id", nullable = false)
     @JsonBackReference
     private Member member;
+
+    @OneToMany(mappedBy = "board", orphanRemoval = true)
+    @JsonManagedReference
+    private List<Comment> comments; // 댓글
 
     public void updateDetails(String title, String content) {
         this.title = title;
