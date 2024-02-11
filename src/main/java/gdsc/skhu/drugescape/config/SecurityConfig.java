@@ -46,6 +46,7 @@ public class SecurityConfig {
                                 "/login",
                                 "/logout",
                                 "/refresh",
+                                "/callback",
                                 "/retrieveTokens",
                                 "/manage",
                                 "/map/**",

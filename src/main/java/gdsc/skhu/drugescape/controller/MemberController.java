@@ -83,6 +83,15 @@ public class MemberController {
         }
     }
 
+    // 반드시 배포된 환경에서 진행해야 한다.
+    // 1.세션 토큰을 이용한 토큰 검색
+    // - code로 다시 보내도 500에러가 나는 이유는 표시된 정보는 엑세스토큰과 리프레시토큰을 받기 위해 이미 사용된 놈들이다.
+    // - 발급받은 code는 일회용
+    // - 그러므로, 웹에서 아무리 code를 서버에 요청해도 에러가 나는 것이다.
+    // 2.엑세스토큰과 리프레시토큰을 조회할 수 있는 추가 메소드를 구현(code를 다시 callback으로 전달하려고 하면, 에러가 난다.)
+    // - 이미 response_type = code를 전달해서 redirect_uri로 보냈다.
+    // - 엑세스토큰과 리프레시토큰만 조회하는 다른 방법을 찾아야 한다.
+    // - 진짜 마지막 방법이다.
     @Operation(summary = "콜백", description = "Google OAuth2를 통해 리디렉트된 요청을 처리합니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "콜백 처리 성공, 사용자는 성공적으로 인증되었으며 액세스 토큰이 발급되었습니다."),
@@ -91,15 +100,17 @@ public class MemberController {
             @ApiResponse(responseCode = "500", description = "서버 내부 오류, Google OAuth2 처리 중 예기치 않은 오류가 발생했습니다.", content = @Content(schema = @Schema(implementation = ResponseErrorDTO.class)))
     })
     @GetMapping("/callback")
-    public ResponseEntity<?> googleOAuth2Callback(@RequestParam(name = "code") String code, HttpServletResponse response) throws IOException {
+    public TokenDTO googleOAuth2Callback(@RequestParam(name = "code") String code, HttpServletResponse response) throws IOException {
         try {
             String googleAccessToken = memberService.getGoogleAccessToken(code);
+            log.info("Google 액세스 토큰을 성공적으로 받았습니다. 토큰: {}", googleAccessToken); // 로그 추가: Google 액세스 토큰 받음
             TokenDTO tokenDTO = memberService.googleLoginSignup(googleAccessToken);
+            log.info("엑세스 토큰과 리프레시 토큰을 포함한 TokenDTO 생성 성공. 엑세스 토큰: {}, 리프레시 토큰: {}", tokenDTO.getAccessToken(), tokenDTO.getRefreshToken()); // 로그 추가: TokenDTO 생성
+//            return tokenDTO; // 게시판 기능 테스트하기 위해 추가!
             String sessionToken = memberService.createSessionToken(tokenDTO);
             String redirectURL = "https://drugescape.netlify.app/path?sessionToken=" + sessionToken;
             response.sendRedirect(redirectURL);
             return null;
-//            return ResponseEntity.ok(tokenDTO); // 게시판 기능 테스트하기 위해 추가!
         } catch (Exception e) {
             log.error("Callback 처리 중 오류 발생", e);
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Callback 처리 중 오류 발생", e);
@@ -113,7 +124,7 @@ public class MemberController {
             @ApiResponse(responseCode = "500", description = "서버 내부 오류", content = @Content(schema = @Schema(implementation = ResponseErrorDTO.class)))
     })
     @GetMapping("/main")
-    public ResponseEntity<?> main(Principal principal) {
+    public ResponseEntity<?> main(Principal principal) { // mypage에서 사용자 프로필을 조회? 바꾸처럼 --> 웹 상담 요청
         if (principal == null) {
             log.warn("Principal 객체가 null입니다. 사용자가 인증되지 않았습니다.");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
