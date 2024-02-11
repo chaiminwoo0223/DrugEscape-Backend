@@ -216,6 +216,12 @@ public class BoardController {
         }
     }
 
+    @Operation(summary = "게시글 검색", description = "제목, 내용, 댓글을 포함하여 게시글을 검색합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "검색 성공"),
+            @ApiResponse(responseCode = "400", description = "잘못된 요청"),
+            @ApiResponse(responseCode = "500", description = "서버 오류")
+    })
     @GetMapping("/share/search")
     public ResponseEntity<Page<BoardDTO>> search(@RequestParam String keyword, Pageable pageable) {
         Page<BoardDTO> searchResults = boardService.searchBoards(keyword, pageable);

@@ -95,11 +95,11 @@ public class MemberController {
         try {
             String googleAccessToken = memberService.getGoogleAccessToken(code);
             TokenDTO tokenDTO = memberService.googleLoginSignup(googleAccessToken);
-//            String sessionToken = memberService.createSessionToken(tokenDTO);
-//            String redirectURL = "https://drugescape.netlify.app/path?sessionToken=" + sessionToken;
-//            response.sendRedirect(redirectURL);
-//            return null;
-            return ResponseEntity.ok(tokenDTO); // 게시판 기능 테스트하기 위해 추가!
+            String sessionToken = memberService.createSessionToken(tokenDTO);
+            String redirectURL = "https://drugescape.netlify.app/path?sessionToken=" + sessionToken;
+            response.sendRedirect(redirectURL);
+            return null;
+//            return ResponseEntity.ok(tokenDTO); // 게시판 기능 테스트하기 위해 추가!
         } catch (Exception e) {
             log.error("Callback 처리 중 오류 발생", e);
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Callback 처리 중 오류 발생", e);
