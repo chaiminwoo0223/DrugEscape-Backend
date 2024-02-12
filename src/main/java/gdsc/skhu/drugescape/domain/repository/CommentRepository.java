@@ -12,6 +12,4 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
     List<Comment> findByBoardId(Long boardId); // 게시글 ID로 댓글 목록 조회
 
     Optional<Comment> findByIdAndBoardId(Long commentId, Long boardId);
-
-    int countByBoardId(Long boardId); // 게시글 ID로 댓글 수를 카운트하는 메소드
 }

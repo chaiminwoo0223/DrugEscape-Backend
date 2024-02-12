@@ -42,12 +42,11 @@ public class SecurityConfig {
                                 "https://drugescape.duckdns.org/**",
                                 "https://drugescape.netlify.app/**",
                                 "http://localhost:8080").permitAll()
-                        .requestMatchers("/main",
+                        .requestMatchers("/main", // main 수정
                                 "/login",
                                 "/logout",
                                 "/refresh",
                                 "/callback",
-                                "/retrieveTokens",
                                 "/manage",
                                 "/map/**",
                                 "/donate/**",
