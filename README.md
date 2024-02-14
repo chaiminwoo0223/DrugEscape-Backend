@@ -3,5 +3,5 @@
 # What is DrugEscape?
 
 <div align="justify">
-<b>"DrugEscape"</b> is To provide resources for safe and effective drug-free living and help you move toward a healthy, sustainable life. We support your resolve and work with you to make successful changes.
+<b>"DrugEscape"</b> is dedicated to providing resources for a safe and effective drug-free lifestyle, assisting you in transitioning toward a healthy, sustainable life. We stand by your commitment and collaborate with you to facilitate successful changes.
 </div>
