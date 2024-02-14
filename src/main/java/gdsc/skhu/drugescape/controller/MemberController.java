@@ -23,7 +23,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.security.Principal;
 
 @Slf4j
-@RequestMapping("/drugescape")
+@RequestMapping("/drugescape") // 삭제 --> retrieve로 변경
 @RestController
 @RequiredArgsConstructor
 @Tag(name = "Member API", description = "사용자 관련 API")
@@ -31,18 +31,17 @@ public class MemberController {
     private final MemberService memberService;
     private final DonationService donationService;
 
-    @Operation(summary = "로그인/회원가입", description = "Google OAuth2를 통한 로그인 및 회원가입을 처리합니다.")
+    @Operation(summary = "로그인", description = "Google OAuth2를 통한 로그인 및 회원가입을 처리합니다.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "로그인/회원가입 성공", content = @Content),
+            @ApiResponse(responseCode = "200", description = "로그인 성공", content = @Content),
             @ApiResponse(responseCode = "400", description = "잘못된 요청", content = @Content(schema = @Schema(implementation = ResponseErrorDTO.class))),
             @ApiResponse(responseCode = "401", description = "인증 실패", content = @Content(schema = @Schema(implementation = ResponseErrorDTO.class))),
             @ApiResponse(responseCode = "500", description = "서버 내부 오류", content = @Content(schema = @Schema(implementation = ResponseErrorDTO.class)))
     })
-    @PostMapping("/login") // 개선
-    public ResponseEntity<?> loginOrSignUp(TokenDTO tokenDTO) {
+    @PostMapping("/login")
+    public ResponseEntity<?> login(String googleAccessToken) {
         try {
-            // TokenDTO tokenDTO = memberService.googleLoginSignup(googleAccessToken);
-            // log.info("엑세스 토큰과 리프레시 토큰을 포함한 TokenDTO 생성 성공. 엑세스 토큰: {}, 리프레시 토큰: {}", tokenDTO.getAccessToken(), tokenDTO.getRefreshToken()); // 로그 추가: TokenDTO 생성
+            TokenDTO tokenDTO = memberService.googleLoginSignup(googleAccessToken);
             return ResponseEntity.ok(tokenDTO);
         } catch (RuntimeException e) {
             log.error("런타임 예외 발생: ", e);
@@ -96,10 +95,8 @@ public class MemberController {
     public TokenDTO googleOAuth2Callback(@RequestParam(name = "code") String code, HttpServletResponse response) throws IOException {
         try {
             String googleAccessToken = memberService.getGoogleAccessToken(code);
-            log.info("Google 액세스 토큰을 성공적으로 받았습니다. 토큰: {}", googleAccessToken); // 로그 추가: Google 액세스 토큰 받음
             TokenDTO tokenDTO = memberService.googleLoginSignup(googleAccessToken);
-            log.info("엑세스 토큰과 리프레시 토큰을 포함한 TokenDTO 생성 성공. 엑세스 토큰: {}, 리프레시 토큰: {}", tokenDTO.getAccessToken(), tokenDTO.getRefreshToken()); // 로그 추가: TokenDTO 생성
-//            return tokenDTO; // 게시판 기능 테스트하기 위해 추가!
+//            return tokenDTO; // 게시판 기능 테스트하기 위해 추가! CI/CD 구현하면 빼기
             String sessionToken = memberService.createSessionToken(tokenDTO);
             String redirectURL = "https://drugescape.netlify.app/path?sessionToken=" + sessionToken;
             response.sendRedirect(redirectURL);
@@ -110,14 +107,14 @@ public class MemberController {
         }
     }
 
-    @Operation(summary = "메인 페이지", description = "메인 페이지로 이동하며, 인증된 사용자의 정보를 반환합니다.")
+    @Operation(summary = "마이 페이지", description = "마이 페이지로 이동하며, 인증된 사용자의 정보를 반환합니다.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "메인 페이지로 이동 성공, 사용자 정보 포함", content = @Content(mediaType = "application/json", schema = @Schema(implementation = MemberDTO.class))),
+            @ApiResponse(responseCode = "200", description = "마이 페이지로 이동 성공, 사용자 정보 포함", content = @Content(mediaType = "application/json", schema = @Schema(implementation = MemberDTO.class))),
             @ApiResponse(responseCode = "401", description = "인증 실패", content = @Content(schema = @Schema(implementation = ResponseErrorDTO.class))),
             @ApiResponse(responseCode = "500", description = "서버 내부 오류", content = @Content(schema = @Schema(implementation = ResponseErrorDTO.class)))
     })
     @GetMapping("/mypage")
-    public ResponseEntity<?> mypage(Principal principal) { // mypage에서 사용자 프로필을 조회? 바꾸처럼 --> 웹 상담 요청
+    public ResponseEntity<?> mypage(Principal principal) {
         if (principal == null) {
             log.warn("Principal 객체가 null입니다. 사용자가 인증되지 않았습니다.");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
@@ -127,11 +124,11 @@ public class MemberController {
             MemberDTO memberInfo = memberService.getAuthenticatedMemberInfo(principal);
             return ResponseEntity.ok(memberInfo);
         } catch (ResponseStatusException e) {
-            log.warn("메인 페이지 요청 처리 중 예외 발생: 상태 코드 = {}, 이유 = {}", e.getStatusCode(), e.getReason());
+            log.warn("마이 페이지 요청 처리 중 예외 발생: 상태 코드 = {}, 이유 = {}", e.getStatusCode(), e.getReason());
             return ResponseEntity.status(e.getStatusCode())
                     .body(new ResponseErrorDTO(e.getReason(), e.getStatusCode().value()));
         } catch (Exception e) {
-            log.error("메인 페이지 요청 처리 중 예기치 않은 오류 발생", e);
+            log.error("마이 페이지 요청 처리 중 예기치 않은 오류 발생", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new ResponseErrorDTO("서버 내부 오류", HttpStatus.INTERNAL_SERVER_ERROR.value()));
         }
@@ -161,7 +158,7 @@ public class MemberController {
             @ApiResponse(responseCode = "404", description = "토큰을 찾을 수 없음", content = @Content(schema = @Schema(implementation = ResponseErrorDTO.class))),
             @ApiResponse(responseCode = "500", description = "서버 내부 오류", content = @Content(schema = @Schema(implementation = ResponseErrorDTO.class)))
     })
-    @GetMapping("/retrieveTokens")
+    @GetMapping("/retrieveTokens") // retrieve로 변경
     public ResponseEntity<TokenDTO> retrieveTokens(@RequestParam(name = "sessionToken") String sessionToken) {
         TokenDTO tokenDTO = memberService.retrieveSessionToken(sessionToken);
         if (tokenDTO != null) {

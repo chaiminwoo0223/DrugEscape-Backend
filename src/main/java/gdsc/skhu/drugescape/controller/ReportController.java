@@ -18,7 +18,7 @@ import java.security.Principal;
 
 @Slf4j
 @RestController
-@RequestMapping("/drugescape")
+@RequestMapping("/drugescape") // 삭제
 @RequiredArgsConstructor
 @Tag(name = "Report API", description = "보고서 관련 API")
 public class ReportController {
