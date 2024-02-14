@@ -41,4 +41,4 @@ We seperate repositories to prevent unexpected side effects in each other's code
 <br/>
 
 ## Architecture
-![Architecture](https://github.com/DrugEscape/DrugEscape-Backend/assets/112475136/f12d1617-a97e-41e0-b5bd-dedfcc0b289f.png)
+![Architecture](https://github.com/DrugEscape/DrugEscape-Backend/assets/112475136/db51eb17-c0ec-4765-8913-4e977c38960d.png)
