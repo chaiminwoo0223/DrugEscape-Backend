@@ -13,19 +13,16 @@
 
 Join us at "DrugEscape" as we work together to forge a world where living free from drugs is a sustainable and enriching choice.
 </div>
-<br/>
 
 ## Sustainable Development Goals
 ![goals](https://github.com/DrugEscape/DrugEscape-Backend/assets/112475136/c2d32acd-a08b-4beb-aa22-b57d9978f734.png)
 * **[Goal 3 : Good Health and Well-Being](https://www.un.org/sustainabledevelopment/health/)**
 : Focusing on the eradication of drug dependency, we offer a pathway towards a healthier, drug-free lifestyle. Our comprehensive platform provides resources, support, and guidance for those seeking to overcome drug dependency, thereby contributing directly to promoting good health and well-being for all ages. By integrating management and reporting tools, a unique donation system, and a community-driven approach, we not only aid in individual recovery but also play a vital role in reducing the global health burden associated with drug abuse. Our efforts are geared towards creating a healthier society where individuals can achieve their full potential, free from the constraints of drug dependency. This commitment to health and well-being is at the core of our mission, reflecting our dedication to contributing positively to a sustainable future.
-<br/>
 
 ## Project Repositories
 We seperate repositories to prevent unexpected side effects in each other's code.
 * [Web Repository](https://github.com/DrugEscape/DrugEscape-Frontend)
 * [Server Repository](https://github.com/DrugEscape/DrugEscape-Backend)
-<br/>
 
 ## Technologies
 * **Web**
@@ -40,7 +37,6 @@ We seperate repositories to prevent unexpected side effects in each other's code
   * Nginx
   * Swagger
   * **Google Cloud Platform**
-<br/>
 
 ## Architecture
 ![Architecture](https://github.com/DrugEscape/DrugEscape-Backend/assets/112475136/d3e9e588-4921-4f95-9841-8553c9e0856c.png)
