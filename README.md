@@ -13,6 +13,7 @@
 
 Join us at "DrugEscape" as we work together to forge a world where living free from drugs is a sustainable and enriching choice.
 </div>
+<br/>
 
 ## Sustainable Development Goals
 ![goals](https://github.com/DrugEscape/DrugEscape-Backend/assets/112475136/c2d32acd-a08b-4beb-aa22-b57d9978f734.png)
