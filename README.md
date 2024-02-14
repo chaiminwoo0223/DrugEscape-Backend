@@ -41,5 +41,5 @@ We seperate repositories to prevent unexpected side effects in each other's code
 ## Architecture
 ![Architecture](https://github.com/DrugEscape/DrugEscape-Backend/assets/112475136/d3e9e588-4921-4f95-9841-8553c9e0856c.png)
 
-## ERD
+## 
 
