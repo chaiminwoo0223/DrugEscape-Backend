@@ -39,3 +39,6 @@ We seperate repositories to prevent unexpected side effects in each other's code
   * Swagger
   * **Google Cloud Platform**
 <br/>
+
+## Architecture
+![Architecture](https://github.com/DrugEscape/DrugEscape-Backend/assets/112475136/f12d1617-a97e-41e0-b5bd-dedfcc0b289f.png)
