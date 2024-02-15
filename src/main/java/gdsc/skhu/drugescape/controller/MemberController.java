@@ -24,7 +24,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.security.Principal;
 
 @Slf4j
-@RequestMapping("/drugescape") // 삭제 --> retrieve로 변경
+@RequestMapping("/drugescape")
 @RestController
 @RequiredArgsConstructor
 @Tag(name = "Member API", description = "사용자 관련 API")
