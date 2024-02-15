@@ -75,7 +75,6 @@ public class ManagementService {
                 .orElseGet(() -> reportService.createReport(memberId, new ReportDTO(totalPoints, 1, dailyGoals)));
     }
 
-    // 값이 더해지는게 아니라, 덮어쓰기가 된다. --> 수정
     private int calculatePoints(ManagementDTO managementDTO) {
         int pointsFromStopDrug = managementDTO.getStopDrug() == 1 ? 100 : 0;
         int pointsFromExercise = managementDTO.getExercise() == 1 ? 100 : 0;

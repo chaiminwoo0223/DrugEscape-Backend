@@ -1,6 +1,7 @@
 package gdsc.skhu.drugescape.controller;
 
 import gdsc.skhu.drugescape.domain.dto.MemberDTO;
+import gdsc.skhu.drugescape.domain.dto.MemberInfoDTO;
 import gdsc.skhu.drugescape.domain.dto.ResponseErrorDTO;
 import gdsc.skhu.drugescape.domain.dto.TokenDTO;
 import gdsc.skhu.drugescape.service.DonationService;
@@ -31,17 +32,16 @@ public class MemberController {
     private final MemberService memberService;
     private final DonationService donationService;
 
-    @Operation(summary = "로그인", description = "Google OAuth2를 통한 로그인 및 회원가입을 처리합니다.")
+    @Operation(summary = "로그인/회원가입", description = "Google OAuth2를 통한 로그인 및 회원가입을 처리합니다.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "로그인 성공", content = @Content),
+            @ApiResponse(responseCode = "200", description = "로그인/회원가입 성공", content = @Content),
             @ApiResponse(responseCode = "400", description = "잘못된 요청", content = @Content(schema = @Schema(implementation = ResponseErrorDTO.class))),
             @ApiResponse(responseCode = "401", description = "인증 실패", content = @Content(schema = @Schema(implementation = ResponseErrorDTO.class))),
             @ApiResponse(responseCode = "500", description = "서버 내부 오류", content = @Content(schema = @Schema(implementation = ResponseErrorDTO.class)))
     })
     @PostMapping("/login")
-    public ResponseEntity<?> login(String googleAccessToken) {
+    public ResponseEntity<?> login(@RequestBody TokenDTO tokenDTO) {
         try {
-            TokenDTO tokenDTO = memberService.googleLoginSignup(googleAccessToken);
             return ResponseEntity.ok(tokenDTO);
         } catch (RuntimeException e) {
             log.error("런타임 예외 발생: ", e);
@@ -107,9 +107,9 @@ public class MemberController {
         }
     }
 
-    @Operation(summary = "마이 페이지", description = "마이 페이지로 이동하며, 인증된 사용자의 정보를 반환합니다.")
+    @Operation(summary = "마이 페이지", description = "마이 페이지로 이동하며, 인증된 사용자의 정보와 총 기부 포인트를 반환합니다.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "마이 페이지로 이동 성공, 사용자 정보 포함", content = @Content(mediaType = "application/json", schema = @Schema(implementation = MemberDTO.class))),
+            @ApiResponse(responseCode = "200", description = "마이 페이지로 이동 성공, 사용자 정보 및 총 기부 포인트 포함", content = @Content(mediaType = "application/json", schema = @Schema(implementation = MemberInfoDTO.class))),
             @ApiResponse(responseCode = "401", description = "인증 실패", content = @Content(schema = @Schema(implementation = ResponseErrorDTO.class))),
             @ApiResponse(responseCode = "500", description = "서버 내부 오류", content = @Content(schema = @Schema(implementation = ResponseErrorDTO.class)))
     })
@@ -122,7 +122,14 @@ public class MemberController {
         }
         try {
             MemberDTO memberInfo = memberService.getAuthenticatedMemberInfo(principal);
-            return ResponseEntity.ok(memberInfo);
+            int totalDonatedPoints = donationService.getTotalDonatedPoints();
+            MemberInfoDTO responseDTO = new MemberInfoDTO(
+                    memberInfo.getName(),
+                    memberInfo.getEmail(),
+                    memberInfo.getPicture(),
+                    totalDonatedPoints
+            );
+            return ResponseEntity.ok(responseDTO);
         } catch (ResponseStatusException e) {
             log.warn("마이 페이지 요청 처리 중 예외 발생: 상태 코드 = {}, 이유 = {}", e.getStatusCode(), e.getReason());
             return ResponseEntity.status(e.getStatusCode())
@@ -134,22 +141,16 @@ public class MemberController {
         }
     }
 
-    @Operation(summary = "관리자 페이지", description = "관리자 페이지로 이동하며, 총 기부 포인트를 반환합니다.")
+    @Operation(summary = "관리자 페이지", description = "관리자 페이지로 이동합니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "관리자 페이지로 이동 성공"),
             @ApiResponse(responseCode = "401", description = "인증되지 않은 사용자 - 로그인이 필요합니다.", content = @Content),
             @ApiResponse(responseCode = "500", description = "서버 내부 오류 - 요청 처리 중 예기치 못한 오류가 발생했습니다.", content = @Content)
     })
     @GetMapping("/admin")
-    public ResponseEntity<Integer> admin(Principal principal) {
+    public ResponseEntity<Void> admin(Principal principal) {
         memberService.upgradeToAdminRole(principal);
-        try {
-            int totalDonatedPoints = donationService.getTotalDonatedPoints();
-            return ResponseEntity.ok(totalDonatedPoints);
-        } catch (Exception e) {
-            log.error("총 기부 포인트 조회 중 오류 발생", e);
-            return ResponseEntity.internalServerError().build();
-        }
+        return ResponseEntity.ok().build();
     }
 
     @Operation(summary = "세션 토큰으로 토큰 검색", description = "제공된 세션 토큰을 사용하여 저장된 엑세스 토큰과 리프레시 토큰을 검색합니다.")
@@ -158,8 +159,8 @@ public class MemberController {
             @ApiResponse(responseCode = "404", description = "토큰을 찾을 수 없음", content = @Content(schema = @Schema(implementation = ResponseErrorDTO.class))),
             @ApiResponse(responseCode = "500", description = "서버 내부 오류", content = @Content(schema = @Schema(implementation = ResponseErrorDTO.class)))
     })
-    @GetMapping("/retrieveTokens") // retrieve로 변경
-    public ResponseEntity<TokenDTO> retrieveTokens(@RequestParam(name = "sessionToken") String sessionToken) {
+    @GetMapping("/retrieveTokens")
+    public ResponseEntity<TokenDTO> retrieve(@RequestParam(name = "sessionToken") String sessionToken) {
         TokenDTO tokenDTO = memberService.retrieveSessionToken(sessionToken);
         if (tokenDTO != null) {
             return ResponseEntity.ok(tokenDTO);

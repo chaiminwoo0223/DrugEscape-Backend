@@ -32,6 +32,7 @@ public class DonationService {
         report.pointDecrease(donationDTO.getDonatingPoint());
         Donation donation = donationRepository.findByReportId(report.getId())
                 .map(latestDonation -> latestDonation.toBuilder()
+                        .donatingPoint(donationDTO.getDonatingPoint())
                         .donatedPoint(latestDonation.getDonatedPoint() + donationDTO.getDonatingPoint())
                         .build())
                 .orElseGet(() -> Donation.builder()

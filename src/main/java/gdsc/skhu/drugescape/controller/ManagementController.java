@@ -22,7 +22,7 @@ import java.security.Principal;
 
 @Slf4j
 @RestController
-@RequestMapping("/drugescape") // 삭제
+@RequestMapping("/drugescape")
 @RequiredArgsConstructor
 @Tag(name = "Management API", description = "관리 관련 API")
 public class ManagementController {

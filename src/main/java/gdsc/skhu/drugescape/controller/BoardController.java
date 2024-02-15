@@ -24,7 +24,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 
 @Slf4j
 @RestController
-@RequestMapping("/drugescape") // 삭제 후, share 변경, 나머지 한칸씩 당기기!
+@RequestMapping("/drugescape")
 @RequiredArgsConstructor
 @Tag(name = "Board API", description = "게시판 관련 API")
 public class BoardController {
