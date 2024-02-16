@@ -56,7 +56,7 @@ We seperate repositories to prevent unexpected side effects in each other's code
 ### 5. Share
 
 ### 6. Map
-![Map](https://github.com/DrugEscape/DrugEscape-Backend/assets/112475136/c08fff46-e0a2-49ee-8319-17baa42c6274.png)
+![Map](https://github.com/DrugEscape/DrugEscape-Backend/assets/112475136/1660b00e-edf2-4dc7-bb77-0532ddccb24d.png)
 
 ### 7. Report
 ![Report](https://github.com/DrugEscape/DrugEscape-Backend/assets/112475136/c24c35e8-8515-4672-aa60-0482c4165172.png)
