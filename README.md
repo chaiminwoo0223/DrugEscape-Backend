@@ -35,6 +35,7 @@ We seperate repositories to prevent unexpected side effects in each other's code
   * Docker
   * Nginx
   * Swagger
+    * [DrugEscape API](http://drugescape.duckdns.org/swagger-ui/index.html)
   * **Google Cloud Platform**
 
 ## Architecture
@@ -49,9 +50,6 @@ We seperate repositories to prevent unexpected side effects in each other's code
 ![Manage](https://github.com/DrugEscape/DrugEscape-Backend/assets/112475136/e65b59ee-8ef5-46b2-801f-bfb0d1fb1ef2.png)
 
 ### 4. Donate
-![Donate](https://github.com/DrugEscape/DrugEscape-Backend/assets/112475136/7fd401b3-8e02-465d-a1ce-18ffdc9ded19.png)
-![Point Input](https://github.com/DrugEscape/DrugEscape-Backend/assets/112475136/3170d1a8-fd0b-4f7a-bfc4-8561aaa40aae.png)
-![Click Donted Button](https://github.com/DrugEscape/DrugEscape-Backend/assets/112475136/20617220-ce8a-45af-a42c-6a98bf0ed7ae.png)
 
 ### 5. Share
 
@@ -59,7 +57,6 @@ We seperate repositories to prevent unexpected side effects in each other's code
 ![Map](https://github.com/DrugEscape/DrugEscape-Backend/assets/112475136/1660b00e-edf2-4dc7-bb77-0532ddccb24d.png)
 
 ### 7. Report
-![Report](https://github.com/DrugEscape/DrugEscape-Backend/assets/112475136/c24c35e8-8515-4672-aa60-0482c4165172.png)
 
 ### 8. My Page
 
