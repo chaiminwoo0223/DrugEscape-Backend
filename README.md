@@ -41,5 +41,26 @@ We seperate repositories to prevent unexpected side effects in each other's code
 ![Architecture](https://github.com/DrugEscape/DrugEscape-Backend/assets/112475136/d3e9e588-4921-4f95-9841-8553c9e0856c.png)
 
 ## How to use DrugEscape
-### 1.First, access the service through the provided [link](https://drugescape.netlify.app/).
+### 1. First, access the service through the provided [link](https://drugescape.netlify.app/).
 ![Home](https://github.com/DrugEscape/DrugEscape-Backend/assets/112475136/6f4dad08-5de0-44ab-91c4-7cc8b7363765.png)
+### 2. Please login to Google.
+![Login](https://github.com/DrugEscape/DrugEscape-Backend/assets/112475136/5d44d8e5-1441-4c65-9e87-2a95c0546a95.png)
+### 3. Manage
+![Manage](https://github.com/DrugEscape/DrugEscape-Backend/assets/112475136/e65b59ee-8ef5-46b2-801f-bfb0d1fb1ef2.png)
+
+### 4. Donate
+![Donate](https://github.com/DrugEscape/DrugEscape-Backend/assets/112475136/7fd401b3-8e02-465d-a1ce-18ffdc9ded19.png)
+![Point Input](https://github.com/DrugEscape/DrugEscape-Backend/assets/112475136/3170d1a8-fd0b-4f7a-bfc4-8561aaa40aae.png)
+![Click Donted Button](https://github.com/DrugEscape/DrugEscape-Backend/assets/112475136/20617220-ce8a-45af-a42c-6a98bf0ed7ae.png)
+
+### 5. Share
+
+### 6. Map
+![Map](https://github.com/DrugEscape/DrugEscape-Backend/assets/112475136/c08fff46-e0a2-49ee-8319-17baa42c6274.png)
+
+### 7. Report
+![Report](https://github.com/DrugEscape/DrugEscape-Backend/assets/112475136/c24c35e8-8515-4672-aa60-0482c4165172.png)
+
+### 8. My Page
+
+## Next Steps
