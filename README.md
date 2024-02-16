@@ -1,7 +1,6 @@
 ![DrugEscape Banner](https://github.com/DrugEscape/DrugEscape-Backend/assets/112475136/d8c7b09c-5898-4a17-81e0-f8beb3f43f52.png)
 
 # What is DrugEscape?
-
 <div align="justify">
 <b>"DrugEscape"</b> is a comprehensive platform committed to empowering you to break free from drug dependency and embrace a safe, effective, and drug-free lifestyle. Our mission is to guide you toward a healthier, more sustainable life, ensuring you feel supported every step of the way. Through dedicated support and collaboration, we focus on facilitating successful lifestyle transformations. Our core values emphasize management and reporting, a unique donation system, and vibrant community engagement:
 
@@ -41,5 +40,6 @@ We seperate repositories to prevent unexpected side effects in each other's code
 ## Architecture
 ![Architecture](https://github.com/DrugEscape/DrugEscape-Backend/assets/112475136/d3e9e588-4921-4f95-9841-8553c9e0856c.png)
 
-## 
-
+## How to use DrugEscape
+### 1.First, access the service through the provided [link](https://drugescape.netlify.app/).
+![Home](https://github.com/DrugEscape/DrugEscape-Backend/assets/112475136/6f4dad08-5de0-44ab-91c4-7cc8b7363765.png)
