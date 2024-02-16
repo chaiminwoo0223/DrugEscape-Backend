@@ -148,9 +148,9 @@ public class MemberController {
             @ApiResponse(responseCode = "500", description = "서버 내부 오류 - 요청 처리 중 예기치 못한 오류가 발생했습니다.", content = @Content)
     })
     @GetMapping("/admin")
-    public ResponseEntity<Void> admin(Principal principal) {
+    public ResponseEntity<String> admin(Principal principal) { // 상태메시지 추가
         memberService.upgradeToAdminRole(principal);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok("당신은 이제 관리자입니다.");
     }
 
     @Operation(summary = "세션 토큰으로 토큰 검색", description = "제공된 세션 토큰을 사용하여 저장된 엑세스 토큰과 리프레시 토큰을 검색합니다.")
