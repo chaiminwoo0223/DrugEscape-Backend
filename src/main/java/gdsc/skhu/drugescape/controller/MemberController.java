@@ -96,11 +96,11 @@ public class MemberController {
         try {
             String googleAccessToken = memberService.getGoogleAccessToken(code);
             TokenDTO tokenDTO = memberService.googleLoginSignup(googleAccessToken);
-//            return tokenDTO; // 게시판 기능 테스트하기 위해 추가! CI/CD 구현하면 빼기
-            String sessionToken = memberService.createSessionToken(tokenDTO);
-            String redirectURL = "https://drugescape.netlify.app/path?sessionToken=" + sessionToken;
-            response.sendRedirect(redirectURL);
-            return null;
+            return tokenDTO; // 게시판 기능 테스트하기 위해 추가! CI/CD 구현하면 빼기
+//            String sessionToken = memberService.createSessionToken(tokenDTO);
+//            String redirectURL = "https://drugescape.netlify.app/path?sessionToken=" + sessionToken;
+//            response.sendRedirect(redirectURL);
+//            return null;
         } catch (Exception e) {
             log.error("Callback 처리 중 오류 발생", e);
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Callback 처리 중 오류 발생", e);
@@ -153,6 +153,9 @@ public class MemberController {
         return ResponseEntity.ok("당신은 이제 관리자입니다.");
     }
 
+    // 1.리프레시 기능이 제대로 작동해야 한다.(엑세스토큰2 저장 = 실제로 사용하지 않는다.) ***
+    // 2.웹에서 화면 전환을 했을 때, 로그인이 풀리지 않으면, 서버에서 정의한 TokenDTO redirectURL 삭제
+    // 3.서버에서 redirectURL을 넘겨준다.
     @Operation(summary = "세션 토큰으로 토큰 검색", description = "제공된 세션 토큰을 사용하여 저장된 엑세스 토큰과 리프레시 토큰을 검색합니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "토큰 검색 성공", content = @Content(mediaType = "application/json", schema = @Schema(implementation = TokenDTO.class))),

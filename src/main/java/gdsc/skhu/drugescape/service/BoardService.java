@@ -78,6 +78,7 @@ public class BoardService {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new ResourceNotFoundException("해당 회원을 찾을 수 없습니다: " + memberId));
         if (isAuthorizedToDelete(member, board)) { // 관리자 또는 게시글 소유자일 경우 삭제 실행
+            commentRepository.deleteByBoardId(boardId); // 게시글에 달린 모든 댓글 삭제
             boardRepository.delete(board);
         } else {
             throw new AccessDeniedException("게시글 삭제 권한이 없습니다.");
