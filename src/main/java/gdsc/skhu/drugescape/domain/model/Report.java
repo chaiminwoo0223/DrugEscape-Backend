@@ -4,6 +4,9 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Builder(toBuilder = true)
 @Getter
@@ -22,6 +25,9 @@ public class Report {
 
     @Column(nullable = false)
     private int dailyGoals;
+
+    @ElementCollection
+    private List<Integer> weeklyGoals = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id", nullable = false)

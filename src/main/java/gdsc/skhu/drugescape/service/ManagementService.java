@@ -12,6 +12,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Stream;
 
 @Service
@@ -34,7 +36,6 @@ public class ManagementService {
                 new EntityNotFoundException("해당 ID를 가진 사용자를 찾을 수 없습니다: " + memberId));
         Report report = processReport(memberId, managementDTO);
         LocalDate today = LocalDate.now();
-
         managementRepository.findByMemberId(memberId)
                 .ifPresentOrElse(
                         existingManagement -> updateManagement(existingManagement, managementDTO, report),
@@ -88,22 +89,31 @@ public class ManagementService {
     }
 
     private Report updateExistingReport(Report existingReport, int totalPoints, int dailyGoals) {
+        List<Integer> updatedWeeklyGoals = new ArrayList<>(existingReport.getWeeklyGoals());
+        if (updatedWeeklyGoals.size() >= 7) {
+            updatedWeeklyGoals.remove(0);
+        }
+        updatedWeeklyGoals.add(dailyGoals);
         existingReport = existingReport.toBuilder()
-                .point(existingReport.getPoint() + totalPoints) // 포인트 누적
-                .maximumDays(existingReport.getMaximumDays() + 1) // 단약일 누적
+                .point(existingReport.getPoint() + totalPoints)
+                .maximumDays(existingReport.getMaximumDays() + 1)
                 .dailyGoals(dailyGoals)
+                .weeklyGoals(updatedWeeklyGoals)
                 .build();
         return reportRepository.save(existingReport);
     }
 
     private Report createNewReport(Long memberId, int totalPoints, int dailyGoals) {
         Member member = memberRepository.findById(memberId).orElseThrow(() ->
-                new EntityNotFoundException("Member not found for ID: " + memberId));
+                new EntityNotFoundException("사용자 ID를 찾을 수 없습니다: " + memberId));
+        List<Integer> initialWeeklyGoals = new ArrayList<>();
+        initialWeeklyGoals.add(dailyGoals);
         Report newReport = Report.builder()
                 .member(member)
                 .point(totalPoints)
                 .maximumDays(1)
                 .dailyGoals(dailyGoals)
+                .weeklyGoals(initialWeeklyGoals)
                 .build();
         return reportRepository.save(newReport);
     }
