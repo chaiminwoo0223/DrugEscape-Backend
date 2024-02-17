@@ -46,18 +46,20 @@ We seperate repositories to prevent unexpected side effects in each other's code
 ![Home](https://github.com/DrugEscape/DrugEscape-Backend/assets/112475136/6f4dad08-5de0-44ab-91c4-7cc8b7363765.png)
 ### 2. Please login to Google.
 ![Login](https://github.com/DrugEscape/DrugEscape-Backend/assets/112475136/5d44d8e5-1441-4c65-9e87-2a95c0546a95.png)
-### 3. Manage
+### 3. Management & Reporting
+Track your daily efforts in maintaining a drug-free lifestyle, including exercise, meals, and medication adherence. Completing these tasks progresses you to the report section, showcasing your daily achievement rate, points earned, total days drug-free, and action guidelines for drug treatment.
 ![Manage](https://github.com/DrugEscape/DrugEscape-Backend/assets/112475136/e65b59ee-8ef5-46b2-801f-bfb0d1fb1ef2.png)
 
-### 4. Donate
+### 4. Donation
+Use the points you've accumulated through managing your journey to a drug-free life to assist others battling addiction. Donated points support centers dedicated to the fight against drug abuse.
 
-### 5. Share
+### 5. Community
+Remember, you're not journeying alone. Engage with our community to find support, celebrate successes, and share strategies for staying drug-free. Connect with individuals who are committed to similar goals and bolster each other on the path to recovery.
 
 ### 6. Map
 ![Map](https://github.com/DrugEscape/DrugEscape-Backend/assets/112475136/1660b00e-edf2-4dc7-bb77-0532ddccb24d.png)
 
-### 7. Report
 
-### 8. My Page
+### 7. My Page
 
 ## Next Steps
