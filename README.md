@@ -57,6 +57,7 @@ Use the points you've accumulated through managing your journey to a drug-free l
 Remember, you're not journeying alone. Engage with our community to find support, celebrate successes, and share strategies for staying drug-free. Connect with individuals who are committed to similar goals and bolster each other on the path to recovery.
 
 ### 6. Map
+Find the nearest center for drug addiction treatment. It will help you return to your daily life more quickly.
 ![Map](https://github.com/DrugEscape/DrugEscape-Backend/assets/112475136/1660b00e-edf2-4dc7-bb77-0532ddccb24d.png)
 
 
