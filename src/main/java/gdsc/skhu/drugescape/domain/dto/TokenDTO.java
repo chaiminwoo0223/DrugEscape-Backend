@@ -16,6 +16,6 @@ public class TokenDTO {
     private String refreshToken;
 
     // 추가
-    @Schema(description = "리다이렉트 URL")
-    private String redirectURL;
+    // @Schema(description = "리다이렉트 URL")
+    // private String redirectURL;
 }

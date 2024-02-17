@@ -67,9 +67,9 @@ public class BoardController {
         }
     }
 
-    @Operation(summary = "게시글 생성", description = "새 게시글을 생성합니다.")
+    @Operation(summary = "게시글 추가", description = "새 게시글을 추가합니다.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "생성 성공"),
+            @ApiResponse(responseCode = "201", description = "게시글 추가 성공"),
             @ApiResponse(responseCode = "400", description = "잘못된 요청")
     })
     @PostMapping("/share/post")
@@ -80,30 +80,6 @@ public class BoardController {
             return new ResponseEntity<>(boardId, HttpStatus.CREATED);
         } catch (Exception e) {
             log.error("게시글 생성 중 예외 발생: {}", e.getMessage());
-            return ResponseEntity.internalServerError().build();
-        }
-    }
-
-    @Operation(summary = "게시글 수정", description = "게시글을 수정합니다.")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "수정 성공"),
-            @ApiResponse(responseCode = "403", description = "수정 권한 없음"),
-            @ApiResponse(responseCode = "404", description = "게시글을 찾을 수 없음")
-    })
-    @PutMapping("/share/{boardId}")
-    public ResponseEntity<?> updateBoard(Principal principal, @PathVariable Long boardId, @RequestBody BoardDTO boardDTO) {
-        Long memberId = Long.parseLong(principal.getName());
-        try {
-            boardService.updateBoard(boardId, boardDTO, memberId);
-            return ResponseEntity.ok().build();
-        } catch (ResourceNotFoundException e) {
-            log.error("게시글 수정 실패: {}", e.getMessage());
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        } catch (AccessDeniedException e) {
-            log.error("게시글 수정 권한 없음: {}", e.getMessage());
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-        } catch (Exception e) {
-            log.error("게시글 수정 중 예외 발생: {}", e.getMessage());
             return ResponseEntity.internalServerError().build();
         }
     }
@@ -214,17 +190,5 @@ public class BoardController {
             log.error("댓글 삭제 중 예외 발생: {}", e.getMessage());
             return ResponseEntity.internalServerError().body("댓글 삭제 중 오류가 발생했습니다.");
         }
-    }
-
-    @Operation(summary = "게시글 검색", description = "제목, 내용, 댓글을 포함하여 게시글을 검색합니다.")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "검색 성공"),
-            @ApiResponse(responseCode = "400", description = "잘못된 요청"),
-            @ApiResponse(responseCode = "500", description = "서버 오류")
-    })
-    @GetMapping("/share/search")
-    public ResponseEntity<Page<BoardDTO>> search(@RequestParam String keyword, Pageable pageable) {
-        Page<BoardDTO> searchResults = boardService.searchBoards(keyword, pageable);
-        return ResponseEntity.ok(searchResults);
     }
 }

@@ -2,12 +2,10 @@ package gdsc.skhu.drugescape.service;
 
 import gdsc.skhu.drugescape.domain.dto.BoardDTO;
 import gdsc.skhu.drugescape.domain.dto.CommentDTO;
-import gdsc.skhu.drugescape.domain.model.Board;
-import gdsc.skhu.drugescape.domain.model.Comment;
-import gdsc.skhu.drugescape.domain.model.Member;
-import gdsc.skhu.drugescape.domain.model.Role;
+import gdsc.skhu.drugescape.domain.model.*;
 import gdsc.skhu.drugescape.domain.repository.BoardRepository;
 import gdsc.skhu.drugescape.domain.repository.CommentRepository;
+import gdsc.skhu.drugescape.domain.repository.HeartRepository;
 import gdsc.skhu.drugescape.domain.repository.MemberRepository;
 import gdsc.skhu.drugescape.exception.ResourceNotFoundException;
 import lombok.extern.slf4j.Slf4j;
@@ -26,13 +24,16 @@ public class BoardService {
     private final BoardRepository boardRepository;
     private final MemberRepository memberRepository;
     private final CommentRepository commentRepository;
+    private final HeartRepository heartRepository;
 
     public BoardService(BoardRepository boardRepository,
                         MemberRepository memberRepository,
-                        CommentRepository commentRepository) {
+                        CommentRepository commentRepository,
+                        HeartRepository heartRepository) {
         this.boardRepository = boardRepository;
         this.memberRepository = memberRepository;
         this.commentRepository = commentRepository;
+        this.heartRepository = heartRepository;
     }
 
     @Transactional
@@ -48,7 +49,6 @@ public class BoardService {
         return createBoardDTO(board);
     }
 
-
     @Transactional
     public Long createBoard(BoardDTO boardDTO, Long memberId) {
         Member member = memberRepository.findById(memberId)
@@ -62,16 +62,6 @@ public class BoardService {
     }
 
     @Transactional
-    public void updateBoard(Long boardId, BoardDTO boardDTO, Long memberId) {
-        Board board = boardRepository.findById(boardId)
-                .orElseThrow(() -> new ResourceNotFoundException("해당 ID의 게시글을 찾을 수 없습니다: " + boardId));
-        if (!board.getMember().getId().equals(memberId)) {
-            throw new AccessDeniedException("게시글 수정 권한이 없습니다.");
-        }
-        board.updateDetails(boardDTO.getTitle(), boardDTO.getContent());
-    }
-
-    @Transactional
     public void deleteBoardIfOwner(Long boardId, Long memberId) {
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new ResourceNotFoundException("해당 게시글을 찾을 수 없습니다: " + boardId));
@@ -79,16 +69,12 @@ public class BoardService {
                 .orElseThrow(() -> new ResourceNotFoundException("해당 회원을 찾을 수 없습니다: " + memberId));
         if (isAuthorizedToDelete(member, board)) { // 관리자 또는 게시글 소유자일 경우 삭제 실행
             commentRepository.deleteByBoardId(boardId); // 게시글에 달린 모든 댓글 삭제
-            boardRepository.delete(board);
+            List<Heart> hearts = heartRepository.findByBoard(board); // 게시글에 대한 모든 좋아요 삭제
+            heartRepository.deleteAll(hearts); // 게시글에 달린 모든 좋아요 조회
+            boardRepository.delete(board); // 게시글 삭제
         } else {
             throw new AccessDeniedException("게시글 삭제 권한이 없습니다.");
         }
-    }
-
-    @Transactional
-    public Page<BoardDTO> searchBoards(String keyword, Pageable pageable) {
-        return boardRepository.findByKeyword(keyword, pageable)
-                .map(this::createBoardDTO);
     }
 
     private boolean isAuthorizedToDelete(Member member, Board board) {

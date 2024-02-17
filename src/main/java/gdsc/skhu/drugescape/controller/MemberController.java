@@ -141,21 +141,18 @@ public class MemberController {
         }
     }
 
-    @Operation(summary = "관리자 페이지", description = "관리자 페이지로 이동합니다.")
+    @Operation(summary = "관리자", description = "관리자 권한을 부여합니다.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "관리자 페이지로 이동 성공"),
+            @ApiResponse(responseCode = "200", description = "관리자 권한 부여 성공"),
             @ApiResponse(responseCode = "401", description = "인증되지 않은 사용자 - 로그인이 필요합니다.", content = @Content),
             @ApiResponse(responseCode = "500", description = "서버 내부 오류 - 요청 처리 중 예기치 못한 오류가 발생했습니다.", content = @Content)
     })
     @GetMapping("/admin")
-    public ResponseEntity<String> admin(Principal principal) { // 상태메시지 추가
+    public ResponseEntity<String> admin(Principal principal) {
         memberService.upgradeToAdminRole(principal);
         return ResponseEntity.ok("당신은 이제 관리자입니다.");
     }
 
-    // 1.리프레시 기능이 제대로 작동해야 한다.(엑세스토큰2 저장 = 실제로 사용하지 않는다.) ***
-    // 2.웹에서 화면 전환을 했을 때, 로그인이 풀리지 않으면, 서버에서 정의한 TokenDTO redirectURL 삭제
-    // 3.서버에서 redirectURL을 넘겨준다.
     @Operation(summary = "세션 토큰으로 토큰 검색", description = "제공된 세션 토큰을 사용하여 저장된 엑세스 토큰과 리프레시 토큰을 검색합니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "토큰 검색 성공", content = @Content(mediaType = "application/json", schema = @Schema(implementation = TokenDTO.class))),

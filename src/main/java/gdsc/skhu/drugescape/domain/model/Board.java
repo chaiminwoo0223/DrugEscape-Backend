@@ -41,11 +41,6 @@ public class Board extends BaseEntity {
     @JsonManagedReference
     private List<Comment> comments; // 댓글
 
-    public void updateDetails(String title, String content) {
-        this.title = title;
-        this.content = content;
-    }
-
     public void incrementHeartCount() {
         this.heartCnt += 1;
     }
