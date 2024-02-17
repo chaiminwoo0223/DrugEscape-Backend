@@ -45,6 +45,7 @@ We seperate repositories to prevent unexpected side effects in each other's code
 ### 1. First, access the service through the provided [link](https://drugescape.netlify.app/).
 ![Home](https://github.com/DrugEscape/DrugEscape-Backend/assets/112475136/6f4dad08-5de0-44ab-91c4-7cc8b7363765.png)
 ### 2. Please login to Google.
+We use Google's OAuth2.0 for secure login, ensuring your information is protected.
 ![Login](https://github.com/DrugEscape/DrugEscape-Backend/assets/112475136/5d44d8e5-1441-4c65-9e87-2a95c0546a95.png)
 ### 3. Management & Reporting
 Monitor your daily progress towards a drug-free life, including exercise, diet, and medication. Completing tasks leads to reports on your achievement rate, earned points, drug-free days, and treatment guidelines.
