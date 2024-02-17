@@ -1,7 +1,6 @@
 package gdsc.skhu.drugescape.service;
 
 import gdsc.skhu.drugescape.domain.dto.ManagementDTO;
-import gdsc.skhu.drugescape.domain.dto.ReportDTO;
 import gdsc.skhu.drugescape.domain.model.Management;
 import gdsc.skhu.drugescape.domain.model.Member;
 import gdsc.skhu.drugescape.domain.model.Report;
@@ -13,39 +12,51 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.stream.Stream;
 
 @Service
 public class ManagementService {
     private final ManagementRepository managementRepository;
     private final MemberRepository memberRepository;
     private final ReportRepository reportRepository;
-    private final ReportService reportService;
 
     public ManagementService(ManagementRepository managementRepository,
                              MemberRepository memberRepository,
-                             ReportRepository reportRepository,
-                             ReportService reportService) {
+                             ReportRepository reportRepository) {
         this.managementRepository = managementRepository;
         this.memberRepository = memberRepository;
         this.reportRepository = reportRepository;
-        this.reportService = reportService;
     }
 
     @Transactional
     public void processManagementRecord(Long memberId, ManagementDTO managementDTO) {
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new EntityNotFoundException("해당 ID를 가진 사용자를 찾을 수 없습니다: " + memberId));
+        Member member = memberRepository.findById(memberId).orElseThrow(() ->
+                new EntityNotFoundException("해당 ID를 가진 사용자를 찾을 수 없습니다: " + memberId));
         Report report = processReport(memberId, managementDTO);
-        Management management = managementRepository.findByMemberId(memberId)
-                .map(existingManagement -> updateManagement(existingManagement, managementDTO, report))
-                .orElseGet(() -> createManagement(member, managementDTO, report));
+        LocalDate today = LocalDate.now();
+
+        managementRepository.findByMemberId(memberId)
+                .ifPresentOrElse(
+                        existingManagement -> updateManagement(existingManagement, managementDTO, report),
+                        () -> createManagement(member, managementDTO, report, today)
+                );
+    }
+
+    private void createManagement(Member member, ManagementDTO managementDTO, Report report, LocalDate today) {
+        Management management = Management.builder()
+                .member(member)
+                .stopDrug(managementDTO.getStopDrug())
+                .exercise(managementDTO.getExercise())
+                .meal(managementDTO.getMeal())
+                .medication(managementDTO.getMedication())
+                .report(report)
+                .lastManagedDate(today)
+                .build();
         managementRepository.save(management);
     }
 
-
-    private Management createManagement(Member member, ManagementDTO managementDTO, Report report) {
-        return Management.builder()
-                .member(member)
+    private void updateManagement(Management existingManagement, ManagementDTO managementDTO, Report report) {
+        Management updatedManagement = existingManagement.toBuilder()
                 .stopDrug(managementDTO.getStopDrug())
                 .exercise(managementDTO.getExercise())
                 .meal(managementDTO.getMeal())
@@ -53,60 +64,47 @@ public class ManagementService {
                 .report(report)
                 .lastManagedDate(LocalDate.now())
                 .build();
+        managementRepository.save(updatedManagement);
     }
 
-    private Management updateManagement(Management existingManagement, ManagementDTO managementDTO, Report report) {
-        return existingManagement.toBuilder()
-                .stopDrug(managementDTO.getStopDrug())
-                .exercise(managementDTO.getExercise())
-                .meal(managementDTO.getMeal())
-                .medication(managementDTO.getMedication())
-                .report(report)
-                .build();
-    }
 
     private Report processReport(Long memberId, ManagementDTO managementDTO) {
         int totalPoints = calculatePoints(managementDTO);
-        int completedTasks = calculateCompletedTasks(managementDTO);
-        int dailyGoals = 25 * completedTasks;
-        LocalDate today = LocalDate.now();
+        int dailyGoals = calculateDailyGoals(managementDTO);
         return reportRepository.findByMemberId(memberId)
-                .map(existingReport -> updateExistingReport(existingReport, memberId, totalPoints, dailyGoals, today))
-                .orElseGet(() -> reportService.createReport(memberId, new ReportDTO(totalPoints, 1, dailyGoals)));
+                .map(existingReport -> updateExistingReport(existingReport, totalPoints, dailyGoals))
+                .orElseGet(() -> createNewReport(memberId, totalPoints, dailyGoals));
     }
 
     private int calculatePoints(ManagementDTO managementDTO) {
-        int pointsFromStopDrug = managementDTO.getStopDrug() == 1 ? 100 : 0;
-        int pointsFromExercise = managementDTO.getExercise() == 1 ? 100 : 0;
-        int pointsFromMeal = managementDTO.getMeal() >= 1 ? 100 : 0;
-        int pointsFromMedication = managementDTO.getMedication() != 0 ? 100 : 0;
-        return pointsFromStopDrug + pointsFromExercise + pointsFromMeal + pointsFromMedication;
+        return Stream.of(managementDTO.getStopDrug(), managementDTO.getExercise(), managementDTO.getMeal(), managementDTO.getMedication())
+                .mapToInt(value -> value > 0 ? 100 : 0).sum();
     }
 
-    private int calculateCompletedTasks(ManagementDTO managementDTO) {
-        int tasks = 0;
-        if (managementDTO.getStopDrug() == 1) tasks++;
-        if (managementDTO.getExercise() == 1) tasks++;
-        if (managementDTO.getMeal() >= 1) tasks++;
-        if (managementDTO.getMedication() != 0) tasks++;
-        return tasks;
+    private int calculateDailyGoals(ManagementDTO managementDTO) {
+        long completedTasks = Stream.of(managementDTO.getStopDrug(), managementDTO.getExercise(), managementDTO.getMeal(), managementDTO.getMedication())
+                .filter(value -> value > 0).count();
+        return (int) completedTasks * 25;
     }
 
-    private Report updateExistingReport(Report existingReport, Long memberId, int totalPoints, int dailyGoals, LocalDate today) {
-        Management management = managementRepository.findByMemberId(memberId)
-                .orElseThrow(() -> new EntityNotFoundException("사용자 ID에 대한 관리를 찾을 수 없습니다: " + memberId));
-        if (!today.equals(management.getLastManagedDate())) {
-            int updatedPoints = existingReport.getPoint() + totalPoints;
-            existingReport = existingReport.toBuilder()
-                    .maximumDays(existingReport.getMaximumDays() + 1)
-                    .point(updatedPoints)
-                    .dailyGoals(dailyGoals)
-                    .build();
-            management = management.toBuilder()
-                    .lastManagedDate(today)
-                    .build();
-        }
-        managementRepository.save(management);
+    private Report updateExistingReport(Report existingReport, int totalPoints, int dailyGoals) {
+        existingReport = existingReport.toBuilder()
+                .point(existingReport.getPoint() + totalPoints) // 포인트 누적
+                .maximumDays(existingReport.getMaximumDays() + 1) // 단약일 누적
+                .dailyGoals(dailyGoals)
+                .build();
         return reportRepository.save(existingReport);
+    }
+
+    private Report createNewReport(Long memberId, int totalPoints, int dailyGoals) {
+        Member member = memberRepository.findById(memberId).orElseThrow(() ->
+                new EntityNotFoundException("Member not found for ID: " + memberId));
+        Report newReport = Report.builder()
+                .member(member)
+                .point(totalPoints)
+                .maximumDays(1)
+                .dailyGoals(dailyGoals)
+                .build();
+        return reportRepository.save(newReport);
     }
 }
