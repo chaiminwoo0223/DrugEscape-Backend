@@ -39,7 +39,7 @@ We seperate repositories to prevent unexpected side effects in each other's code
   * **Google Cloud Platform**
 
 ## Architecture
-![Architecture](https://github.com/DrugEscape/DrugEscape-Backend/assets/112475136/d3e9e588-4921-4f95-9841-8553c9e0856c.png)
+![Architecture](https://github.com/DrugEscape/DrugEscape-Backend/assets/112475136/1fb86dee-8177-475b-969a-5b9e4bbce302.png)
 
 ## How to use DrugEscape
 ### 1. First, access the service through the provided [link](https://drugescape.netlify.app/).
