@@ -45,23 +45,27 @@ We seperate repositories to prevent unexpected side effects in each other's code
 ### 1. First, access the service through the provided [link](https://drugescape.netlify.app/).
 To provide resources for safe and effective drug-free living and help you move toward a healthy, sustainable life. We support your resolve and work with you to make successful changes.
 ![Home](https://github.com/DrugEscape/DrugEscape-Backend/assets/112475136/6f4dad08-5de0-44ab-91c4-7cc8b7363765.png)
+
 ### 2. Please login to Google.
 We implement Google's OAuth2.0 for our secure login process, guaranteeing that your personal information remains protected at all times. This authentication method ensures a safe and reliable way to access our services.
 ![Login](https://github.com/DrugEscape/DrugEscape-Backend/assets/112475136/5d44d8e5-1441-4c65-9e87-2a95c0546a95.png)
+
 ### 3. Management & Reporting
 Monitor your daily progress towards a drug-free life, including exercise, meals, and medication. Completing tasks leads to reports on your achievement rate, earned points, drug-free days, and treatment guidelines.
 ![Manage](https://github.com/DrugEscape/DrugEscape-Backend/assets/112475136/e65b59ee-8ef5-46b2-801f-bfb0d1fb1ef2.png)
+![Report](https://github.com/DrugEscape/DrugEscape-Backend/assets/112475136/7ed866a7-9be2-4aa8-a91a-a38909ef358c.png)
 
 ### 4. Donation
 Use the points you've accumulated through managing your journey to a drug-free life to assist others battling addiction. Donated points support centers dedicated to the fight against drug abuse.
+![Donate](https://github.com/DrugEscape/DrugEscape-Backend/assets/112475136/78c24c3b-6409-41d6-aca2-e15b5e134ecf.png)
 
 ### 5. Community
 You're not alone on this journey. Join our community for support, celebrate success, and share drug-free strategies. Connect with like-minded individuals and support each other towards recovery.
+![board](https://github.com/DrugEscape/DrugEscape-Backend/assets/112475136/68e9fac2-d050-48ca-9a50-2e2af55a524a.png)
 
 ### 6. Map
 Find the nearest center for drug addiction treatment. It will help you return to your daily life more quickly.
 ![Map](https://github.com/DrugEscape/DrugEscape-Backend/assets/112475136/1660b00e-edf2-4dc7-bb77-0532ddccb24d.png)
-
 
 ### 7. My Page
 
