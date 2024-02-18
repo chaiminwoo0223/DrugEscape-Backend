@@ -14,7 +14,7 @@ Join us at "DrugEscape" as we work together to forge a world where living free f
 </div>
 
 ## Sustainable Development Goals
-![Goals](https://github.com/chaiminwoo0223/Tools/assets/112475136/67dc4821-a2be-4739-bba9-244cf64db287)
+![Goals](https://github.com/DrugEscape/DrugEscape-Backend/assets/112475136/75e82fc0-fc03-4d87-beea-f9e3152588f5)
 * **[Goal 3 : Good Health and Well-Being](https://www.un.org/sustainabledevelopment/health/)**
 : Focusing on the eradication of drug dependency, we offer a pathway towards a healthier, drug-free lifestyle. Our comprehensive platform provides resources, support, and guidance for those seeking to overcome drug dependency, thereby contributing directly to promoting good health and well-being for all ages. By integrating management and reporting tools, a unique donation system, and a community-driven approach, we not only aid in individual recovery but also play a vital role in reducing the global health burden associated with drug abuse. Our efforts are geared towards creating a healthier society where individuals can achieve their full potential, free from the constraints of drug dependency. This commitment to health and well-being is at the core of our mission, reflecting our dedication to contributing positively to a sustainable future.
 
@@ -39,16 +39,16 @@ We seperate repositories to prevent unexpected side effects in each other's code
   * **Google Cloud Platform**
 
 ## Architecture
-![Architecture](https://github.com/chaiminwoo0223/Tools/assets/112475136/ad86c684-668b-4842-a572-9dba508682a8)
+![Architecture](https://github.com/DrugEscape/DrugEscape-Backend/assets/112475136/05daabaa-2ded-4b54-a26c-078fa77e6816)
 
 ## How to use DrugEscape
 ### 1. First, access the service through the provided [link](https://drugescape.netlify.app/).
 To provide resources for safe and effective drug-free living and help you move toward a healthy, sustainable life. We support your resolve and work with you to make successful changes.
-![Home](https://github.com/chaiminwoo0223/Tools/assets/112475136/516906b5-28cc-426d-92d5-0934bf15be52)
+![Home](https://github.com/DrugEscape/DrugEscape-Backend/assets/112475136/f40c8118-7225-4c62-a431-6dea5cd91012)
 
 ### 2. Please login to Google.
 We implement Google's OAuth2.0 for our secure login process, guaranteeing that your personal information remains protected at all times. This authentication method ensures a safe and reliable way to access our services.
-![Login](https://github.com/chaiminwoo0223/Tools/assets/112475136/afd3dad8-cd49-4a71-b2fb-0a7908a2f827)
+![Login](https://github.com/DrugEscape/DrugEscape-Backend/assets/112475136/37999e25-cab0-4f8d-b302-86c9d8178ceb)
 
 ### 3. Management & Reporting
 Monitor your daily progress towards a drug-free life, including exercise, meals, and medication. Completing tasks leads to reports on your achievement rate, earned points, drug-free days, and treatment guidelines.
@@ -57,19 +57,19 @@ Monitor your daily progress towards a drug-free life, including exercise, meals,
 
 ### 4. Donation
 Use the points you've accumulated through managing your journey to a drug-free life to assist others battling addiction. Donated points support centers dedicated to the fight against drug abuse.
-![Donate](https://github.com/chaiminwoo0223/Tools/assets/112475136/d16246dc-7ef5-43ea-a3c7-8ec4c40f6715)
+![Donate](https://github.com/DrugEscape/DrugEscape-Backend/assets/112475136/e09916fd-e14a-432b-a9fb-15a5edecb4ea)
 
 ### 5. Community
 You're not alone on this journey. Join our community for support, celebrate success, and share drug-free strategies. Connect with like-minded individuals and support each other towards recovery.
-![Share](https://github.com/chaiminwoo0223/Tools/assets/112475136/b62b8a3f-ea57-4709-9a46-bc83e533a09a)
+![Share](https://github.com/DrugEscape/DrugEscape-Backend/assets/112475136/1560fd6d-de2f-4bbd-96b0-cf3ff0e083a6)
 
 ### 6. Map
 Find the nearest center for drug addiction treatment. It will help you return to your daily life more quickly.
-![Map](https://github.com/chaiminwoo0223/Tools/assets/112475136/07ff4d23-b466-44a6-b976-c22a4708eb1c)
+![Map](https://github.com/DrugEscape/DrugEscape-Backend/assets/112475136/bea6099b-d60c-4c83-9aa2-3393322afc3e)
 
 ### 7. My Page
 In My Page, you can see your account's information and check the total points donated by others.
-![Mypage](https://github.com/chaiminwoo0223/Tools/assets/112475136/611322c2-6c09-485e-90e9-1975a0158c96)
+![Mypage](https://github.com/DrugEscape/DrugEscape-Backend/assets/112475136/9ad7ecac-5cda-4e97-adf0-17b622bc9921)
 
 ## Next Steps
 * Firebase ensures more secure user data management, including login functionality.
