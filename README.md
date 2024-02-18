@@ -49,7 +49,7 @@ To provide resources for safe and effective drug-free living and help you move t
 We use Google's OAuth2.0 for secure login, ensuring your information is protected.
 ![Login](https://github.com/DrugEscape/DrugEscape-Backend/assets/112475136/5d44d8e5-1441-4c65-9e87-2a95c0546a95.png)
 ### 3. Management & Reporting
-Monitor your daily progress towards a drug-free life, including exercise, diet, and medication. Completing tasks leads to reports on your achievement rate, earned points, drug-free days, and treatment guidelines.
+Monitor your daily progress towards a drug-free life, including exercise, meals, and medication. Completing tasks leads to reports on your achievement rate, earned points, drug-free days, and treatment guidelines.
 ![Manage](https://github.com/DrugEscape/DrugEscape-Backend/assets/112475136/e65b59ee-8ef5-46b2-801f-bfb0d1fb1ef2.png)
 
 ### 4. Donation
