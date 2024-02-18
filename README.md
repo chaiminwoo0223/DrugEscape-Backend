@@ -46,7 +46,7 @@ We seperate repositories to prevent unexpected side effects in each other's code
 To provide resources for safe and effective drug-free living and help you move toward a healthy, sustainable life. We support your resolve and work with you to make successful changes.
 ![Home](https://github.com/DrugEscape/DrugEscape-Backend/assets/112475136/6f4dad08-5de0-44ab-91c4-7cc8b7363765.png)
 ### 2. Please login to Google.
-We use Google's OAuth2.0 for secure login, ensuring your information is protected.
+We implement Google's OAuth2.0 for our secure login process, guaranteeing that your personal information remains protected at all times. This authentication method ensures a safe and reliable way to access our services.
 ![Login](https://github.com/DrugEscape/DrugEscape-Backend/assets/112475136/5d44d8e5-1441-4c65-9e87-2a95c0546a95.png)
 ### 3. Management & Reporting
 Monitor your daily progress towards a drug-free life, including exercise, meals, and medication. Completing tasks leads to reports on your achievement rate, earned points, drug-free days, and treatment guidelines.
