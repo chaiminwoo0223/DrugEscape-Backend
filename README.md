@@ -61,15 +61,15 @@ Use the points you've accumulated through managing your journey to a drug-free l
 
 ### 5. Community
 You're not alone on this journey. Join our community for support, celebrate success, and share drug-free strategies. Connect with like-minded individuals and support each other towards recovery.
-![board](https://github.com/DrugEscape/DrugEscape-Backend/assets/112475136/68e9fac2-d050-48ca-9a50-2e2af55a524a.png)
+![Share](https://github.com/chaiminwoo0223/Tools/assets/112475136/b62b8a3f-ea57-4709-9a46-bc83e533a09a)
 
 ### 6. Map
 Find the nearest center for drug addiction treatment. It will help you return to your daily life more quickly.
-![Map](https://github.com/DrugEscape/DrugEscape-Backend/assets/112475136/1660b00e-edf2-4dc7-bb77-0532ddccb24d.png)
+![Map](https://github.com/chaiminwoo0223/Tools/assets/112475136/5e67e4b9-98ea-472f-8a00-b787092897d7)
 
 ### 7. My Page
 In My Page, you can see your account's information and check the total points donated by others.
-![Mypage](https://github.com/DrugEscape/DrugEscape-Backend/assets/112475136/7135cff0-eca8-4ce9-a7a3-77af90c11391.png)
+![Mypage](https://github.com/chaiminwoo0223/Tools/assets/112475136/e752adf4-5428-4a83-b296-b66d10b8405a)
 
 ## Next Steps
 * Firebase ensures more secure user data management, including login functionality.
