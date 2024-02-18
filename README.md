@@ -72,3 +72,12 @@ In My Page, you can see your account's information and check the total points do
 ![Mypage](https://github.com/DrugEscape/DrugEscape-Backend/assets/112475136/7135cff0-eca8-4ce9-a7a3-77af90c11391.png)
 
 ## Next Steps
+* Firebase ensures more secure user data management, including login functionality.
+* Flutter supports easily accessible mobile services for users.
+* Enhancing UI/UX for users to provide an improved web experience.
+
+## Team DrugEscape
+|[Minwoo Choi](https://github.com/chaiminwoo0223)|[Ihwa Kim](https://github.com/ihwag719)|[Incheol Lee](https://github.com/dldlscjf123)|[Jiwon Youn](https://github.com/jw0613)|
+|:---:|:---:|:---:|:---:|
+|<img src="https://github.com/chaiminwoo0223.png">|<img src="https://github.com/ihwag719.png">|<img src="https://github.com/dldlscjf123.png">|<img src="https://github.com/jw0613.png">|
+|Backend|Backend|Frontend|PM|
