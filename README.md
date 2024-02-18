@@ -68,5 +68,7 @@ Find the nearest center for drug addiction treatment. It will help you return to
 ![Map](https://github.com/DrugEscape/DrugEscape-Backend/assets/112475136/1660b00e-edf2-4dc7-bb77-0532ddccb24d.png)
 
 ### 7. My Page
+In My Page, you can see your account's information and check the total points donated by others.
+![Mypage](https://github.com/DrugEscape/DrugEscape-Backend/assets/112475136/7135cff0-eca8-4ce9-a7a3-77af90c11391.png)
 
 ## Next Steps
