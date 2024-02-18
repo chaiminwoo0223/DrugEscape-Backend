@@ -65,7 +65,7 @@ You're not alone on this journey. Join our community for support, celebrate succ
 
 ### 6. Map
 Find the nearest center for drug addiction treatment. It will help you return to your daily life more quickly.
-![Map](https://github.com/chaiminwoo0223/Tools/assets/112475136/5e67e4b9-98ea-472f-8a00-b787092897d7)
+![Map](https://github.com/chaiminwoo0223/Tools/assets/112475136/07ff4d23-b466-44a6-b976-c22a4708eb1c)
 
 ### 7. My Page
 In My Page, you can see your account's information and check the total points donated by others.
