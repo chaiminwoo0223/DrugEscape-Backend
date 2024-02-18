@@ -44,11 +44,11 @@ We seperate repositories to prevent unexpected side effects in each other's code
 ## How to use DrugEscape
 ### 1. First, access the service through the provided [link](https://drugescape.netlify.app/).
 To provide resources for safe and effective drug-free living and help you move toward a healthy, sustainable life. We support your resolve and work with you to make successful changes.
-![Home](https://github.com/DrugEscape/DrugEscape-Backend/assets/112475136/6f4dad08-5de0-44ab-91c4-7cc8b7363765.png)
+![Home](https://github.com/chaiminwoo0223/Tools/assets/112475136/516906b5-28cc-426d-92d5-0934bf15be52.png)
 
 ### 2. Please login to Google.
 We implement Google's OAuth2.0 for our secure login process, guaranteeing that your personal information remains protected at all times. This authentication method ensures a safe and reliable way to access our services.
-![Login](https://github.com/DrugEscape/DrugEscape-Backend/assets/112475136/5d44d8e5-1441-4c65-9e87-2a95c0546a95.png)
+![Login](https://github.com/chaiminwoo0223/Tools/assets/112475136/afd3dad8-cd49-4a71-b2fb-0a7908a2f827.png)
 
 ### 3. Management & Reporting
 Monitor your daily progress towards a drug-free life, including exercise, meals, and medication. Completing tasks leads to reports on your achievement rate, earned points, drug-free days, and treatment guidelines.
@@ -57,7 +57,7 @@ Monitor your daily progress towards a drug-free life, including exercise, meals,
 
 ### 4. Donation
 Use the points you've accumulated through managing your journey to a drug-free life to assist others battling addiction. Donated points support centers dedicated to the fight against drug abuse.
-![Donate](https://github.com/DrugEscape/DrugEscape-Backend/assets/112475136/78c24c3b-6409-41d6-aca2-e15b5e134ecf.png)
+![Donate](https://github.com/chaiminwoo0223/Tools/assets/112475136/d16246dc-7ef5-43ea-a3c7-8ec4c40f6715.png)
 
 ### 5. Community
 You're not alone on this journey. Join our community for support, celebrate success, and share drug-free strategies. Connect with like-minded individuals and support each other towards recovery.
