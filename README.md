@@ -55,7 +55,7 @@ Monitor your daily progress towards a drug-free life, including exercise, diet, 
 Use the points you've accumulated through managing your journey to a drug-free life to assist others battling addiction. Donated points support centers dedicated to the fight against drug abuse.
 
 ### 5. Community
-Remember, you're not journeying alone. Engage with our community to find support, celebrate successes, and share strategies for staying drug-free. Connect with individuals who are committed to similar goals and bolster each other on the path to recovery.
+You're not alone on this journey. Join our community for support, celebrate success, and share drug-free strategies. Connect with like-minded individuals and support each other towards recovery.
 
 ### 6. Map
 Find the nearest center for drug addiction treatment. It will help you return to your daily life more quickly.
