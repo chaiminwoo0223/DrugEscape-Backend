@@ -1,4 +1,4 @@
-![DrugEscape Banner](https://github.com/DrugEscape/DrugEscape-Backend/assets/112475136/d8c7b09c-5898-4a17-81e0-f8beb3f43f52.png)
+![DrugEscape Banner](https://github.com/DrugEscape/DrugEscape-Backend/assets/112475136/d8c7b09c-5898-4a17-81e0-f8beb3f43f52)
 
 # What is DrugEscape?
 <div align="justify">
@@ -14,7 +14,7 @@ Join us at "DrugEscape" as we work together to forge a world where living free f
 </div>
 
 ## Sustainable Development Goals
-![goals](https://github.com/chaiminwoo0223/Tools/assets/112475136/67dc4821-a2be-4739-bba9-244cf64db287)
+![Goals](https://github.com/chaiminwoo0223/Tools/assets/112475136/67dc4821-a2be-4739-bba9-244cf64db287)
 * **[Goal 3 : Good Health and Well-Being](https://www.un.org/sustainabledevelopment/health/)**
 : Focusing on the eradication of drug dependency, we offer a pathway towards a healthier, drug-free lifestyle. Our comprehensive platform provides resources, support, and guidance for those seeking to overcome drug dependency, thereby contributing directly to promoting good health and well-being for all ages. By integrating management and reporting tools, a unique donation system, and a community-driven approach, we not only aid in individual recovery but also play a vital role in reducing the global health burden associated with drug abuse. Our efforts are geared towards creating a healthier society where individuals can achieve their full potential, free from the constraints of drug dependency. This commitment to health and well-being is at the core of our mission, reflecting our dedication to contributing positively to a sustainable future.
 
