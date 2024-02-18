@@ -43,6 +43,7 @@ We seperate repositories to prevent unexpected side effects in each other's code
 
 ## How to use DrugEscape
 ### 1. First, access the service through the provided [link](https://drugescape.netlify.app/).
+To provide resources for safe and effective drug-free living and help you move toward a healthy, sustainable life. We support your resolve and work with you to make successful changes.
 ![Home](https://github.com/DrugEscape/DrugEscape-Backend/assets/112475136/6f4dad08-5de0-44ab-91c4-7cc8b7363765.png)
 ### 2. Please login to Google.
 We use Google's OAuth2.0 for secure login, ensuring your information is protected.
