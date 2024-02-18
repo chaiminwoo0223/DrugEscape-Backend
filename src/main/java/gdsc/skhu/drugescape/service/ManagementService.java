@@ -7,6 +7,7 @@ import gdsc.skhu.drugescape.domain.model.Report;
 import gdsc.skhu.drugescape.domain.repository.ManagementRepository;
 import gdsc.skhu.drugescape.domain.repository.MemberRepository;
 import gdsc.skhu.drugescape.domain.repository.ReportRepository;
+import gdsc.skhu.drugescape.exception.EntityAlreadyExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,8 +35,12 @@ public class ManagementService {
     public void processManagementRecord(Long memberId, ManagementDTO managementDTO) {
         Member member = memberRepository.findById(memberId).orElseThrow(() ->
                 new EntityNotFoundException("해당 ID를 가진 사용자를 찾을 수 없습니다: " + memberId));
-        Report report = processReport(memberId, managementDTO);
         LocalDate today = LocalDate.now();
+        boolean managementExistsForToday = managementRepository.findByMemberIdAndLastManagedDate(memberId, today).isPresent();
+        if (managementExistsForToday) {
+            throw new EntityAlreadyExistsException("해당 사용자는 오늘 이미 관리 기록을 완료했습니다: " + memberId);
+        }
+        Report report = processReport(memberId, managementDTO);
         managementRepository.findByMemberId(memberId)
                 .ifPresentOrElse(
                         existingManagement -> updateManagement(existingManagement, managementDTO, report),
@@ -67,7 +72,6 @@ public class ManagementService {
                 .build();
         managementRepository.save(updatedManagement);
     }
-
 
     private Report processReport(Long memberId, ManagementDTO managementDTO) {
         int totalPoints = calculatePoints(managementDTO);

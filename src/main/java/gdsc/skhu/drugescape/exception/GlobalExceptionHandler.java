@@ -33,4 +33,9 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> handleException(Exception e) {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("서버 오류: " + e.getMessage());
     }
+
+    @ExceptionHandler(EntityAlreadyExistsException.class)
+    public ResponseEntity<String> handleEntityAlreadyExistsException(EntityAlreadyExistsException e) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+    }
 }
