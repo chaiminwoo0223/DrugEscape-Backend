@@ -52,7 +52,8 @@ We implement Google's OAuth2.0 for our secure login process, guaranteeing that y
 
 ### 3. Management & Reporting
 Monitor your daily progress towards a drug-free life, including exercise, meals, and medication. Completing tasks leads to reports on your achievement rate, earned points, drug-free days, and treatment guidelines.
-![Manage&Report](https://github.com/DrugEscape/DrugEscape-Backend/assets/112475136/63cf75d1-2dca-4a1f-b567-94dd4b83c6f9)
+![Manage](https://github.com/DrugEscape/DrugEscape-Backend/assets/112475136/67063939-7d70-4d05-aac9-9e738c11ebef)
+![Report](https://github.com/DrugEscape/DrugEscape-Backend/assets/112475136/24e1eaf9-f49e-4285-b9cc-eb1d762c7755)
 
 ### 4. Donation
 Use the points you've accumulated through managing your journey to a drug-free life to assist others battling addiction. Donated points support centers dedicated to the fight against drug abuse.
