@@ -52,7 +52,6 @@ We implement Google's OAuth2.0 for our secure login process, guaranteeing that y
 
 ### 3. Management & Reporting
 Monitor your daily progress towards a drug-free life, including exercise, meals, and medication. Completing tasks leads to reports on your achievement rate, earned points, drug-free days, and treatment guidelines.
-![Manage](https://github.com/DrugEscape/DrugEscape-Backend/assets/112475136/e65b59ee-8ef5-46b2-801f-bfb0d1fb1ef2.png)
 ![Manage&Report](https://github.com/DrugEscape/DrugEscape-Backend/assets/112475136/634c05f4-c1a2-49c8-9dda-16ff115692a7)
 
 ### 4. Donation
