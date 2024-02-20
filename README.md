@@ -69,7 +69,7 @@ Find the nearest center for drug addiction treatment. It will help you return to
 
 ### 7. My Page
 In My Page, you can see your account's information and check the total points donated by others.
-![Mypage](https://github.com/DrugEscape/DrugEscape-Backend/assets/112475136/9ad7ecac-5cda-4e97-adf0-17b622bc9921)
+![Mypage](https://github.com/DrugEscape/DrugEscape-Backend/assets/112475136/b65fe952-3958-4794-a28e-5a19c9f268fd)
 
 ## Next Steps
 * Firebase ensures more secure user data management, including login functionality.
