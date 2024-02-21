@@ -70,7 +70,7 @@ Find the nearest center for drug addiction treatment. It will help you return to
 ![Map](https://github.com/DrugEscape/DrugEscape-Backend/assets/112475136/bea6099b-d60c-4c83-9aa2-3393322afc3e)
 
 ### 7. My Page
-In My Page, view account details and total points donated. Admin privileges allow you to manage the Share (Community), including deleting posts and comments to foster a healthy online environment.
+In My Page, view your account details and the total points donated, and with admin privileges, you can manage the Share (Community) by deleting posts and comments to foster a healthy online environment.
 ![Mypage](https://github.com/DrugEscape/DrugEscape-Backend/assets/112475136/b65fe952-3958-4794-a28e-5a19c9f268fd)
 
 ## Next Steps
