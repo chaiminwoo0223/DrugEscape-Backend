@@ -8,33 +8,23 @@ import gdsc.skhu.drugescape.domain.repository.CommentRepository;
 import gdsc.skhu.drugescape.domain.repository.HeartRepository;
 import gdsc.skhu.drugescape.domain.repository.MemberRepository;
 import gdsc.skhu.drugescape.exception.ResourceNotFoundException;
-import lombok.extern.slf4j.Slf4j;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.data.domain.Page;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Slf4j
 @Service
+@RequiredArgsConstructor
 public class BoardService {
     private final BoardRepository boardRepository;
     private final MemberRepository memberRepository;
     private final CommentRepository commentRepository;
     private final HeartRepository heartRepository;
-
-    public BoardService(BoardRepository boardRepository,
-                        MemberRepository memberRepository,
-                        CommentRepository commentRepository,
-                        HeartRepository heartRepository) {
-        this.boardRepository = boardRepository;
-        this.memberRepository = memberRepository;
-        this.commentRepository = commentRepository;
-        this.heartRepository = heartRepository;
-    }
 
     @Transactional
     public Page<BoardDTO> getBoardList(Pageable pageable) {

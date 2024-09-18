@@ -1,13 +1,15 @@
 package gdsc.skhu.drugescape.service;
 
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import gdsc.skhu.drugescape.domain.dto.MemberDTO;
+import gdsc.skhu.drugescape.domain.dto.TokenDTO;
 import gdsc.skhu.drugescape.domain.model.Member;
 import gdsc.skhu.drugescape.domain.model.Role;
 import gdsc.skhu.drugescape.domain.repository.MemberRepository;
-import gdsc.skhu.drugescape.domain.dto.MemberDTO;
-import gdsc.skhu.drugescape.domain.dto.TokenDTO;
 import gdsc.skhu.drugescape.jwt.TokenProvider;
 import gdsc.skhu.drugescape.jwt.TokenStorage;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.security.core.Authentication;
@@ -16,45 +18,33 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
-import com.google.gson.reflect.TypeToken;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.lang.reflect.Type;
-
 import java.net.URI;
 import java.security.Principal;
 import java.util.Map;
 import java.util.UUID;
 
 @Service
+@RequiredArgsConstructor
 public class MemberService {
-    private final String GOOGLE_TOKEN_URL;
-    private final String GOOGLE_CLIENT_ID;
-    private final String GOOGLE_CLIENT_SECRET;
-    private final String GOOGLE_REDIRECT_URI;
-
     private final MemberRepository memberRepository;
     private final TokenProvider tokenProvider;
     private final TokenBlackListService tokenBlackListService;
     private final TokenStorage tokenStorage;
 
-    public MemberService(@Value("${GOOGLE_TOKEN_URL}") String googleTokenUrl,
-                         @Value("${GOOGLE_CLIENT_ID}") String googleClientId,
-                         @Value("${GOOGLE_CLIENT_SECRET}") String googleClientSecret,
-                         @Value("${GOOGLE_REDIRECT_URI}") String googleRedirectUri,
-                         MemberRepository memberRepository,
-                         TokenProvider tokenProvider,
-                         TokenBlackListService tokenBlackListService,
-                         TokenStorage tokenStorage) {
-        this.GOOGLE_TOKEN_URL = googleTokenUrl;
-        this.GOOGLE_CLIENT_ID = googleClientId;
-        this.GOOGLE_CLIENT_SECRET = googleClientSecret;
-        this.GOOGLE_REDIRECT_URI = googleRedirectUri;
-        this.memberRepository = memberRepository;
-        this.tokenProvider = tokenProvider;
-        this.tokenBlackListService = tokenBlackListService;
-        this.tokenStorage = tokenStorage;
-    }
+    @Value("${GOOGLE_TOKEN_URL}")
+    private String GOOGLE_TOKEN_URL;
+
+    @Value("${GOOGLE_CLIENT_ID}")
+    private String GOOGLE_CLIENT_ID;
+
+    @Value("${GOOGLE_CLIENT_SECRET}")
+    private String GOOGLE_CLIENT_SECRET;
+
+    @Value("${GOOGLE_REDIRECT_URI}")
+    private String GOOGLE_REDIRECT_URI;
 
     public String getGoogleAccessToken(String code) {
         RestTemplate restTemplate = new RestTemplate();
