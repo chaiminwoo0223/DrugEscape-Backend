@@ -8,22 +8,17 @@ import gdsc.skhu.drugescape.domain.repository.BoardRepository;
 import gdsc.skhu.drugescape.domain.repository.CommentRepository;
 import gdsc.skhu.drugescape.domain.repository.MemberRepository;
 import gdsc.skhu.drugescape.exception.ResourceNotFoundException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
-
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@RequiredArgsConstructor
 public class CommentService {
     private final CommentRepository commentRepository;
     private final BoardRepository boardRepository;
     private final MemberRepository memberRepository;
-
-    public CommentService(CommentRepository commentRepository, BoardRepository boardRepository, MemberRepository memberRepository) {
-        this.commentRepository = commentRepository;
-        this.boardRepository = boardRepository;
-        this.memberRepository = memberRepository;
-    }
 
     @Transactional
     public void addComment(Long boardId, Long memberId, String content) {

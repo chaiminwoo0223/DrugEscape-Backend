@@ -7,20 +7,16 @@ import gdsc.skhu.drugescape.domain.repository.BoardRepository;
 import gdsc.skhu.drugescape.domain.repository.HeartRepository;
 import gdsc.skhu.drugescape.domain.repository.MemberRepository;
 import gdsc.skhu.drugescape.exception.ResourceNotFoundException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@RequiredArgsConstructor
 public class HeartService {
     private final HeartRepository heartRepository;
     private final BoardRepository boardRepository;
     private final MemberRepository memberRepository;
-
-    public HeartService(HeartRepository heartRepository, BoardRepository boardRepository, MemberRepository memberRepository) {
-        this.heartRepository = heartRepository;
-        this.boardRepository = boardRepository;
-        this.memberRepository = memberRepository;
-    }
 
     @Transactional
     public void addHeart(Long boardId, Long memberId) {

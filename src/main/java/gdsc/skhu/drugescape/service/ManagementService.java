@@ -9,6 +9,7 @@ import gdsc.skhu.drugescape.domain.repository.MemberRepository;
 import gdsc.skhu.drugescape.domain.repository.ReportRepository;
 import gdsc.skhu.drugescape.exception.EntityAlreadyExistsException;
 import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,18 +19,11 @@ import java.util.List;
 import java.util.stream.Stream;
 
 @Service
+@RequiredArgsConstructor
 public class ManagementService {
     private final ManagementRepository managementRepository;
     private final MemberRepository memberRepository;
     private final ReportRepository reportRepository;
-
-    public ManagementService(ManagementRepository managementRepository,
-                             MemberRepository memberRepository,
-                             ReportRepository reportRepository) {
-        this.managementRepository = managementRepository;
-        this.memberRepository = memberRepository;
-        this.reportRepository = reportRepository;
-    }
 
     @Transactional
     public void processManagementRecord(Long memberId, ManagementDTO managementDTO) {
